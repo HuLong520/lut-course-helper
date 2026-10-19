@@ -1392,6 +1392,14 @@ svg {
   box-shadow: 0 7px 16px rgba(20, 125, 109, 0.13);
 }
 
+.queue-run-button.is-stop,
+.queue-run-button.is-stop:hover {
+  color: #ffffff;
+  background: var(--red);
+  border-color: var(--red);
+  box-shadow: 0 7px 16px rgba(187, 75, 66, 0.2);
+}
+
 .parameters-strip {
   display: grid;
   grid-template-columns: repeat(3, 1fr) auto;
@@ -1694,6 +1702,14 @@ svg {
 .group-expand:hover {
   color: var(--ink);
   background: var(--surface-soft);
+}
+
+.group-expand .icon {
+  transition: transform var(--transition);
+}
+
+.group-card.is-collapsed .group-expand .icon {
+  transform: rotate(-90deg);
 }
 
 .group-symbol {

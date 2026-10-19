@@ -233,11 +233,11 @@
                     <div class="queue-subtitle">同课程按加入顺序形成首选与备选</div>
                   </div>
                   <div class="queue-actions">
-                    <button class="button primary queue-run-button" type="button" data-action="start-all" aria-label="开始全部课程组">
-                      <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
+                    <button class="button primary queue-run-button" type="button" data-action="toggle-all" aria-pressed="false" aria-label="开始全部课程组" data-queue-toggle>
+                      <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true" data-queue-toggle-icon>
                         <path d="m8 5 11 7-11 7V5Z" />
                       </svg>
-                      开始全部
+                      <span data-queue-toggle-label>开始全部</span>
                     </button>
                   </div>
                 </div>

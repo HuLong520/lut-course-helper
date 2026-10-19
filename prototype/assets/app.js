@@ -259,18 +259,38 @@
       `;
     $("[data-group-count]").textContent = state.groups.length;
     updateThreadLoad();
+    updateQueueToggle();
+  }
+
+  function updateQueueToggle() {
+    const button = $("[data-queue-toggle]");
+    if (!button) return;
+    const running = state.groups.some((group) => group.state === "running");
+    button.dataset.stopMode = String(running);
+    button.classList.toggle("is-stop", running);
+    button.setAttribute("aria-pressed", String(running));
+    button.setAttribute("aria-label", running ? "全部停止" : "开始全部课程组");
+    const label = $("[data-queue-toggle-label]", button);
+    if (label) label.textContent = running ? "全部停止" : "开始全部";
+    const icon = $("[data-queue-toggle-icon]", button);
+    if (icon) {
+      icon.innerHTML = running
+        ? '<rect x="6" y="6" width="12" height="12" rx="1"/>'
+        : '<path d="m8 5 11 7-11 7V5Z"/>';
+    }
   }
 
   function groupMarkup(group) {
     const success = group.state === "success" ? "is-success" : "";
     const single = group.tasks.length === 1;
+    const collapsed = group.collapsed ? "is-collapsed" : "";
     const action = group.state === "running"
       ? `<button class="group-action" type="button" data-group-pause="${group.id}" aria-label="暂停整组">${ICONS.pause}</button>`
       : `<button class="group-action" type="button" data-group-start="${group.id}" aria-label="开始整组">${ICONS.play}</button>`;
     return `
-      <article class="group-card is-collapsed ${single ? "is-single" : ""} ${success}" data-group-id="${escapeHtml(group.id)}">
+      <article class="group-card ${collapsed} ${single ? "is-single" : ""} ${success}" data-group-id="${escapeHtml(group.id)}">
         <div class="group-head">
-          <button class="group-expand" type="button" data-group-menu="${group.id}" aria-label="课程组操作" title="课程组操作">${ICONS.chevron}</button>
+          ${single ? "" : `<button class="group-expand" type="button" data-group-collapse="${group.id}" aria-label="展开或收起课程组" aria-expanded="${String(!group.collapsed)}">${ICONS.chevron}</button>`}
           <span class="group-symbol">${escapeHtml(group.code.slice(-2))}</span>
           <div class="group-copy">
             <div class="group-name">${escapeHtml(group.name)} ${single ? `<span class="single-class">${escapeHtml(group.tasks[0].classNo)} 班</span>` : ""}</div>
@@ -947,28 +967,15 @@
     const menu = document.createElement("div");
     menu.className = "menu-popover";
     menu.innerHTML = `
-      <button class="menu-item" type="button" data-menu-start>${ICONS.play} 开始课程组</button>
-      <button class="menu-item" type="button" data-menu-stop>${ICONS.pause} 暂停课程组</button>
+      <button class="menu-item" type="button" data-menu-detail>${ICONS.book} 查看课程组详情</button>
       <button class="menu-item" type="button" data-menu-reset>${ICONS.clock} 重置为待开始</button>
       <div class="menu-separator"></div>
       <button class="menu-item danger" type="button" data-menu-delete>${ICONS.x} 删除课程组</button>
     `;
     positionMenu(menu, anchor);
-    $("[data-menu-start]", menu).addEventListener("click", () => {
-      group.state = "running";
-      group.tasks.forEach((task, index) => {
-        task.state = index === 0 ? "active" : "standby";
-      });
-      renderGroups();
+    $("[data-menu-detail]", menu).addEventListener("click", () => {
       closePopover();
-    });
-    $("[data-menu-stop]", menu).addEventListener("click", () => {
-      group.state = "paused";
-      group.tasks.forEach((task) => {
-        task.state = "paused";
-      });
-      renderGroups();
-      closePopover();
+      showInfo(`${group.name} · ${group.tasks.length} 个教学班`, "课程组详情");
     });
     $("[data-menu-reset]", menu).addEventListener("click", () => {
       group.state = "waiting";
@@ -983,6 +990,7 @@
       closePopover();
       renderCourses();
       renderGroups();
+      updateQueueToggle();
       showInfo("课程组已删除。", "已删除");
     });
   }
@@ -1132,17 +1140,28 @@
           pushLog("[已选课程] 手动刷新课程与课表", "INFO");
         }
         if (action === "toggle-schedule") toggleSchedule();
-        if (action === "start-all") {
+        if (action === "toggle-all") {
+          const hasRunning = state.groups.some((group) => group.state === "running");
           state.groups.forEach((group) => {
             if (group.state === "success") return;
-            group.state = "running";
-            group.tasks.forEach((task, index) => {
-              task.state = index === 0 ? "active" : "standby";
-            });
+            if (hasRunning) {
+              group.state = "paused";
+              group.tasks.forEach((task) => {
+                task.state = "paused";
+              });
+            } else {
+              group.state = "running";
+              group.tasks.forEach((task, index) => {
+                task.state = index === 0 ? "active" : "standby";
+              });
+            }
           });
           renderGroups();
-          showInfo("所有未成功课程组已从首选开始。", "已开始");
-          pushLog("[课程组] 全部开始", "INFO");
+          showInfo(
+            hasRunning ? "所有运行中课程组已暂停。" : "所有未成功课程组已从首选开始。",
+            hasRunning ? "已全部停止" : "已全部开始",
+          );
+          pushLog(hasRunning ? "[课程组] 全部停止" : "[课程组] 全部开始", "INFO");
         }
         if (action === "mute") {
           state.muted = !state.muted;
@@ -1224,6 +1243,15 @@
     });
     $$("[data-group-list]").forEach((list) => {
       list.addEventListener("click", (event) => {
+        const collapse = event.target.closest("[data-group-collapse]");
+        if (collapse) {
+          const group = state.groups.find((item) => item.id === collapse.dataset.groupCollapse);
+          if (group) {
+            group.collapsed = !group.collapsed;
+            renderGroups();
+          }
+          return;
+        }
         const start = event.target.closest("[data-group-start]");
         if (start) {
           const group = state.groups.find((item) => item.id === start.dataset.groupStart);
