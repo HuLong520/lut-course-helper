@@ -98,7 +98,7 @@
     return `
       <tr data-course-id="${escapeHtml(course.id)}" class="${added ? "is-added" : ""}">
         <td>
-          <button class="add-course ${added ? "is-added" : ""}" type="button" data-course-add="${escapeHtml(course.id)}" aria-label="${added ? "已加入抢课队列" : "加入抢课队列"}" ${added ? "disabled" : ""}>
+          <button class="add-course ${added ? "is-added" : ""}" type="button" data-course-add="${escapeHtml(course.id)}" aria-label="${added ? "取消加入抢课队列" : "加入抢课队列"}" title="${added ? "再次点击取消加入" : "加入抢课队列"}">
             ${added ? ICONS.check : ICONS.plus}
             <span>${added ? "已加入" : "加入"}</span>
           </button>
@@ -262,7 +262,7 @@
   }
 
   function groupMarkup(group) {
-    const collapsed = group.state === "success" ? "is-collapsed" : "";
+    const collapsed = group.state === "success" || group.collapsed ? "is-collapsed" : "";
     const success = group.state === "success" ? "is-success" : "";
     const single = group.tasks.length === 1;
     const action = group.state === "running"
@@ -270,7 +270,7 @@
       : `<button class="group-action" type="button" data-group-start="${group.id}" aria-label="开始整组">${ICONS.play}</button>`;
     return `
       <article class="group-card ${single ? "is-single" : ""} ${collapsed} ${success}" data-group-id="${escapeHtml(group.id)}">
-        <div class="group-head" data-group-toggle="${escapeHtml(group.id)}">
+        <div class="group-head" data-group-toggle="${escapeHtml(group.id)}" ${single ? "" : 'role="button" tabindex="0" aria-label="展开或收起课程组"'}>
           ${single ? "" : `<button class="group-expand" type="button" aria-label="展开或收起课程组">${ICONS.chevron}</button>`}
           <span class="group-symbol">${escapeHtml(group.code.slice(-2))}</span>
           <div class="group-copy">
@@ -687,6 +687,7 @@
       };
       state.groups.push(group);
     }
+      group.collapsed = false;
     if (group.tasks.some((task) => task.classId === course.classId)) {
       openDuplicateModal("course-duplicate", [{ course, group }]);
       return;
@@ -712,6 +713,19 @@
     newest?.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }
 
+  function removeCourseFromQueue(course) {
+    const group = state.groups.find((item) => item.code === course.code);
+    if (!group) return;
+    group.tasks = group.tasks.filter((task) => task.classId !== course.classId);
+    if (!group.tasks.length) {
+      state.groups = state.groups.filter((item) => item.id !== group.id);
+    }
+    renderCourses();
+    renderGroups();
+    showInfo(`“${course.name}” ${course.classNo} 班已取消加入。`, "已取消");
+    pushLog(`[课程页] 取消加入 ${course.name} ${course.classNo} 班`, "INFO");
+  }
+
   function addAllBasket() {
     if (!state.basket.length) return;
     const courses = state.basket.map((id) => allCourseById.get(id)).filter(Boolean);
@@ -731,6 +745,7 @@
         state.groups.push(group);
         groupMap.set(course.code, group);
       }
+      group.collapsed = false;
       if (!group.tasks.some((task) => task.classId === course.classId)) {
         group.tasks.push({
           id: `task-${course.classId}`,
@@ -893,17 +908,8 @@
       closePopover();
     });
     $("[data-menu-remove]", menu).addEventListener("click", () => {
-      const group = state.groups.find((item) => item.code === course.code);
-      if (group) {
-        group.tasks = group.tasks.filter((task) => task.classId !== course.classId);
-        if (!group.tasks.length) {
-          state.groups = state.groups.filter((item) => item.id !== group.id);
-        }
-      }
-      renderCourses();
-      renderGroups();
+      removeCourseFromQueue(course);
       closePopover();
-      showInfo("已从抢课队列移除。", "已移除");
     });
   }
 
@@ -1024,7 +1030,10 @@
       const addButton = event.target.closest("[data-course-add]");
       if (addButton) {
         const course = courseById.get(addButton.dataset.courseAdd);
-        if (course) addCourseDirectly(course);
+        if (course) {
+          if (addButton.classList.contains("is-added")) removeCourseFromQueue(course);
+          else addCourseDirectly(course);
+        }
         return;
       }
       const detailButton = event.target.closest("[data-detail-course]");
@@ -1217,8 +1226,11 @@
       list.addEventListener("click", (event) => {
         const groupToggle = event.target.closest("[data-group-toggle]");
         if (groupToggle) {
-          const card = groupToggle.closest(".group-card");
-          if (card) card.classList.toggle("is-collapsed");
+          const group = state.groups.find((item) => item.id === groupToggle.dataset.groupToggle);
+          if (group && group.tasks.length > 1 && group.state !== "running" && group.state !== "success") {
+            group.collapsed = !group.collapsed;
+            renderGroups();
+          }
           return;
         }
         const start = event.target.closest("[data-group-start]");
@@ -1268,6 +1280,13 @@
           if (group) openGroupMenu(groupMenu, group);
         }
       });
+    });
+    $("[data-group-list]").addEventListener("keydown", (event) => {
+      if (event.key !== "Enter" && event.key !== " ") return;
+      const groupToggle = event.target.closest("[data-group-toggle]");
+      if (!groupToggle) return;
+      event.preventDefault();
+      groupToggle.click();
     });
     $$("[data-all-body]").forEach((body) => {
       body.addEventListener("change", (event) => {

@@ -1121,24 +1121,42 @@ svg {
 
 .add-course {
   display: inline-flex;
-  min-width: 62px;
-  height: 27px;
+  min-height: 27px;
   align-items: center;
   justify-content: center;
-  gap: 4px;
-  padding: 3px 7px;
+  gap: 0;
+  padding: 3px;
   color: var(--teal-strong);
   font-size: 8px;
   font-weight: 700;
   white-space: nowrap;
-  background: var(--teal-pale);
-  border: 1px solid #cfe4dc;
-  border-radius: 7px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 999px;
   cursor: pointer;
   transition: color var(--transition), background var(--transition), border-color var(--transition);
 }
 
+.add-course > span {
+  display: none;
+}
+
+.add-course > .icon {
+  width: 24px;
+  height: 24px;
+  padding: 5px;
+  background: var(--teal-pale);
+  border: 1px solid #cfe4dc;
+  border-radius: 50%;
+}
+
 .add-course:hover {
+  color: var(--teal);
+  background: transparent;
+  border-color: transparent;
+}
+
+.add-course:hover > .icon {
   color: #ffffff;
   background: var(--teal);
   border-color: var(--teal);
@@ -1147,15 +1165,28 @@ svg {
 .add-course.is-added,
 .add-course:disabled {
   color: var(--teal-strong);
-  background: #eef8f3;
-  border-color: #b9dccc;
-  cursor: default;
+  background: transparent;
+  border-color: transparent;
+  cursor: pointer;
   opacity: 1;
 }
 
-.add-course .icon {
-  width: 13px;
-  height: 13px;
+.add-course.is-added > .icon {
+  color: #ffffff;
+  background: var(--teal);
+  border-color: var(--teal);
+}
+
+.add-course.is-added:hover {
+  color: var(--red);
+  background: transparent;
+  border-color: transparent;
+}
+
+.add-course.is-added:hover > .icon {
+  color: #ffffff;
+  background: var(--red);
+  border-color: var(--red);
 }
 
 .course-table tbody tr.is-added {
@@ -1590,6 +1621,14 @@ svg {
 
 .group-card.is-single.is-collapsed .group-body {
   display: block;
+}
+
+.group-card.is-collapsed:not(.is-single) .group-body {
+  display: none;
+}
+
+.group-card.is-collapsed:not(.is-single) .group-head {
+  padding-bottom: 11px;
 }
 
 .single-class {
