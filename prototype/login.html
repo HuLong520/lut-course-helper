@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="LUTHelper 登录界面原型" />
+    <title>登录 · 抢课助手</title>
+    <link rel="icon" href="../../favicon.ico" />
+    <link rel="stylesheet" href="assets/styles.css" />
+  </head>
+  <body class="login-page">
+    <header class="login-brandbar">
+      <div class="brand-mark" aria-hidden="true">
+        <svg class="icon" viewBox="0 0 24 24">
+          <path d="M4 6.5 12 3l8 3.5-8 3.5-8-3.5Z" />
+          <path d="M6.5 8.5v5.2c0 1.8 2.5 3.3 5.5 3.3s5.5-1.5 5.5-3.3V8.5" />
+          <path d="M20 7v6" />
+        </svg>
+      </div>
+      <div class="brand-text">
+        <span class="brand-name">抢课助手</span>
+        <span class="brand-meta">LUT HELPER</span>
+      </div>
+      <span class="login-secure">
+        <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
+          <rect x="5" y="10" width="14" height="10" rx="2" />
+          <path d="M8 10V7a4 4 0 0 1 8 0v3" />
+        </svg>
+        登录信息仅用于连接学校选课系统
+      </span>
+    </header>
+
+    <main class="login-stage">
+      <section class="login-card" aria-label="登录抢课助手">
+        <div class="login-visual" aria-hidden="true">
+          <div class="visual-kicker">LESS WAITING, MORE CONTROL</div>
+          <h1 class="visual-title">把抢课这件事<br />做得更<span>从容</span>。</h1>
+          <p class="visual-copy">
+            先看清每一个教学班，再安排首选与备选。定时、队列和请求状态都在同一处，不用反复切换页面。
+          </p>
+
+          <div class="visual-calendar">
+            <div class="visual-calendar-head">
+              <svg class="icon icon-sm" viewBox="0 0 24 24">
+                <path d="M5 6.5h14v12H5zM8 4v5M16 4v5M5 10h14" />
+              </svg>
+              <span>WEEKLY OVERVIEW</span>
+              <span>第 8 周</span>
+            </div>
+            <div class="visual-grid">
+              <div class="visual-day">08</div>
+              <div class="visual-day">一</div>
+              <div class="visual-day">二</div>
+              <div class="visual-day">三</div>
+              <div class="visual-day">四</div>
+              <div class="visual-day">五</div>
+              <div class="visual-day">1</div>
+              <div class="visual-course">A</div>
+              <div class="visual-cell"></div>
+              <div class="visual-cell"></div>
+              <div class="visual-cell"></div>
+              <div class="visual-course">E</div>
+              <div class="visual-day">3</div>
+              <div class="visual-course">B</div>
+              <div class="visual-course" style="grid-column: span 2">C</div>
+              <div class="visual-cell"></div>
+              <div class="visual-cell"></div>
+              <div class="visual-day">5</div>
+              <div class="visual-cell"></div>
+              <div class="visual-course">D</div>
+              <div class="visual-cell"></div>
+              <div class="visual-cell"></div>
+              <div class="visual-day">7</div>
+              <div class="visual-cell"></div>
+              <div class="visual-cell"></div>
+              <div class="visual-cell"></div>
+              <div class="visual-course">F</div>
+              <div class="visual-day">9</div>
+              <div class="visual-cell"></div>
+              <div class="visual-cell"></div>
+              <div class="visual-cell"></div>
+              <div class="visual-cell"></div>
+              <div class="visual-cell"></div>
+            </div>
+          </div>
+
+          <div class="visual-side-card">
+            <div class="visual-side-card-head">
+              <span class="status-dot"></span>
+              <span>课程组 A</span>
+              <span>运行中</span>
+            </div>
+            <div class="visual-mini-task"><span class="bar"></span><span>01 班 · 首选</span><span>48 次</span></div>
+            <div class="visual-mini-task"><span class="bar" style="background: #a5afaa"></span><span>02 班 · 备选</span><span>待命</span></div>
+          </div>
+        </div>
+
+        <div class="login-panel">
+          <div class="login-panel-head">
+            <div class="login-panel-kicker">SIGN IN TO CONTINUE</div>
+            <h1>登录抢课助手</h1>
+            <p>使用兰州理工大学选课系统账号登录。</p>
+          </div>
+
+          <form class="login-form" id="login-form" novalidate>
+            <div class="field">
+              <div class="field-label-row">
+                <label class="field-label" for="account-select">学号</label>
+                <span class="field-hint">最近使用优先</span>
+              </div>
+              <div class="account-row">
+                <div class="input-wrap">
+                  <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
+                    <circle cx="12" cy="8.5" r="3" />
+                    <path d="M6.5 19c.6-3 2.5-4.5 5.5-4.5s4.9 1.5 5.5 4.5" />
+                  </svg>
+                  <select class="input select-input with-icon" id="account-select" aria-label="选择已保存账号">
+                    <option value="2024********">2024******** · 最近使用</option>
+                    <option value="2023********">2023********</option>
+                    <option value="__new__">＋ 新增账号</option>
+                  </select>
+                </div>
+                <button class="add-account" type="button" title="新增账号" data-action="new-account">
+                  <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M12 5v14M5 12h14" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="field" id="new-username-field" hidden>
+              <label class="field-label" for="new-username">新学号</label>
+              <div class="input-wrap">
+                <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
+                  <circle cx="12" cy="8.5" r="3" />
+                  <path d="M6.5 19c.6-3 2.5-4.5 5.5-4.5s4.9 1.5 5.5 4.5" />
+                </svg>
+                <input class="input with-icon" id="new-username" type="text" placeholder="输入学号" inputmode="numeric" autocomplete="username" />
+              </div>
+            </div>
+
+            <div class="field">
+              <div class="field-label-row">
+                <label class="field-label" for="password">密码</label>
+                <span class="field-hint">明文保存在本机 accounts.json</span>
+              </div>
+              <div class="input-wrap">
+                <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
+                  <rect x="5" y="10" width="14" height="10" rx="2" />
+                  <path d="M8 10V7a4 4 0 0 1 8 0v3" />
+                </svg>
+                <input class="input with-icon with-action" id="password" type="password" placeholder="输入密码" autocomplete="current-password" />
+                <button class="input-action" type="button" data-action="toggle-password" aria-label="显示密码">
+                  <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M3.5 12s3.1-5 8.5-5 8.5 5 8.5 5-3.1 5-8.5 5-8.5-5-8.5-5Z" />
+                    <circle cx="12" cy="12" r="2.3" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="field">
+              <div class="field-label-row">
+                <label class="field-label" for="captcha">验证码</label>
+                <span class="field-hint">点击右侧图片刷新</span>
+              </div>
+              <div class="captcha-row">
+                <div class="input-wrap">
+                  <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M5 5h14v14H5z" />
+                    <path d="M9 9h6v6H9z" />
+                  </svg>
+                  <input class="input with-icon" id="captcha" type="text" placeholder="输入验证码" autocomplete="off" maxlength="8" />
+                </div>
+                <button class="captcha-box" type="button" data-action="refresh-captcha" aria-label="刷新验证码">
+                  <span>7 A K 9</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="form-options">
+              <label class="check-label">
+                <input class="checkbox" id="remember-password" type="checkbox" checked />
+                记住密码
+              </label>
+              <span style="flex: 1"></span>
+              <span class="field-hint">不迁移旧配置</span>
+            </div>
+
+            <div class="login-info" id="login-error" role="alert" hidden>
+              <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 4 3.7 19h16.6L12 4Z" />
+                <path d="M12 9v4M12 16.5v.1" />
+              </svg>
+              <span id="login-error-text">请输入密码和验证码。</span>
+            </div>
+
+            <button class="login-button" id="login-button" type="submit">
+              <span id="login-button-label">进入工作台</span>
+              <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="m9 6 6 6-6 6" />
+              </svg>
+            </button>
+          </form>
+
+          <div class="login-panel-footer">
+            <span>界面原型 · 演示模式</span>
+            <span>LUTHelper</span>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <div class="toast-region" data-toast-region></div>
+    <script>
+      (() => {
+        const form = document.getElementById("login-form");
+        const accountSelect = document.getElementById("account-select");
+        const newField = document.getElementById("new-username-field");
+        const newUsername = document.getElementById("new-username");
+        const password = document.getElementById("password");
+        const captcha = document.getElementById("captcha");
+        const remember = document.getElementById("remember-password");
+        const error = document.getElementById("login-error");
+        const errorText = document.getElementById("login-error-text");
+        const button = document.getElementById("login-button");
+        const label = document.getElementById("login-button-label");
+        const icon = button.querySelector("svg");
+
+        function setNewAccount(force) {
+          const isNew = force || accountSelect.value === "__new__";
+          newField.hidden = !isNew;
+          if (isNew) {
+            accountSelect.value = "__new__";
+            newUsername.focus();
+          }
+        }
+
+        function showError(message) {
+          errorText.textContent = message;
+          error.hidden = false;
+        }
+
+        function clearError() {
+          error.hidden = true;
+        }
+
+        accountSelect.addEventListener("change", () => {
+          clearError();
+          setNewAccount(false);
+          if (accountSelect.value === "2023********") {
+            password.value = "example-password";
+          }
+        });
+
+        document.querySelector('[data-action="new-account"]').addEventListener("click", () => {
+          clearError();
+          setNewAccount(true);
+        });
+
+        document.querySelector('[data-action="toggle-password"]').addEventListener("click", (event) => {
+          const visible = password.type === "text";
+          password.type = visible ? "password" : "text";
+          event.currentTarget.setAttribute("aria-label", visible ? "显示密码" : "隐藏密码");
+          event.currentTarget.classList.toggle("active", !visible);
+        });
+
+        document.querySelector('[data-action="refresh-captcha"]').addEventListener("click", function () {
+          clearError();
+          captcha.value = "";
+          const box = this;
+          box.querySelector("span").textContent = "刷新中";
+          box.disabled = true;
+          setTimeout(() => {
+            const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+            const value = Array.from({ length: 4 }, () => chars[Math.floor(Math.random() * chars.length)]).join(" ");
+            box.querySelector("span").textContent = `${value.slice(0, 1)} ${value.slice(2, 3)} ${value.slice(4, 5)} ${value.slice(6, 7)}`;
+            box.disabled = false;
+            captcha.focus();
+          }, 420);
+        });
+
+        [newUsername, password, captcha].forEach((input) => {
+          input.addEventListener("input", clearError);
+        });
+
+        form.addEventListener("submit", (event) => {
+          event.preventDefault();
+          clearError();
+          const username = accountSelect.value === "__new__" ? newUsername.value.trim() : accountSelect.value;
+          if (!/^\d{8,}$/.test(username) && username !== "2024********" && username !== "2023********") {
+            showError("请输入有效学号。");
+            (accountSelect.value === "__new__" ? newUsername : password).focus();
+            return;
+          }
+          if (!password.value.trim()) {
+            showError("请输入密码。");
+            password.focus();
+            return;
+          }
+          if (!captcha.value.trim()) {
+            showError("请输入验证码。");
+            captcha.focus();
+            return;
+          }
+          if (captcha.value.replace(/\s/g, "").length < 4) {
+            showError("验证码格式不正确，请点击图片刷新后重试。");
+            captcha.focus();
+            return;
+          }
+
+          button.disabled = true;
+          label.textContent = "正在验证…";
+          icon.outerHTML = '<span class="spinner" aria-hidden="true"></span>';
+          setTimeout(() => {
+            window.location.href = "index.html";
+          }, 800);
+        });
+      })();
+    </script>
+  </body>
+</html>

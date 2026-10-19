@@ -1,0 +1,622 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="LUTHelper 抢课助手界面原型" />
+    <title>抢课助手 · 界面原型</title>
+    <link rel="icon" href="../../favicon.ico" />
+    <link rel="stylesheet" href="assets/styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="主导航">
+        <div class="brand">
+          <div class="brand-mark" aria-hidden="true">
+            <svg class="icon" viewBox="0 0 24 24">
+              <path d="M4 6.5 12 3l8 3.5-8 3.5-8-3.5Z" />
+              <path d="M6.5 8.5v5.2c0 1.8 2.5 3.3 5.5 3.3s5.5-1.5 5.5-3.3V8.5" />
+              <path d="M20 7v6" />
+            </svg>
+          </div>
+          <div class="brand-text">
+            <span class="brand-name">抢课助手</span>
+            <span class="brand-meta">LUT HELPER</span>
+          </div>
+        </div>
+
+        <div class="nav-section">
+          <div class="nav-label">工作空间</div>
+          <ul class="nav-list">
+            <li>
+              <button class="nav-link active" type="button" data-page="courses" aria-current="page">
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M4 5.5h16v13H4z" />
+                  <path d="M8 5.5v13M4 10h16M4 14.5h16" />
+                </svg>
+                <span>课程</span>
+                <span class="nav-count">3</span>
+              </button>
+            </li>
+            <li>
+              <button class="nav-link" type="button" data-page="all-courses">
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <circle cx="11" cy="11" r="6.5" />
+                  <path d="m16 16 4 4M8 11h6M11 8v6" />
+                </svg>
+                <span>全校课程</span>
+              </button>
+            </li>
+            <li>
+              <button class="nav-link" type="button" data-page="selected">
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M4 5.5h16v14H4z" />
+                  <path d="M8 3v5M16 3v5M4 9h16" />
+                  <path d="m9 14 2 2 4-4" />
+                </svg>
+                <span>已选课程</span>
+              </button>
+            </li>
+          </ul>
+        </div>
+
+        <div class="sidebar-footer">
+          <div class="batch-note">
+            <div class="batch-note-label">CURRENT ROUND</div>
+            <div class="batch-note-title">
+              <span class="batch-note-dot" aria-hidden="true"></span>
+              <span data-session="batch">2026 年秋季学期正选</span>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <main class="shell-main">
+        <header class="topbar">
+          <div class="topbar-left">
+            <div>
+              <div class="eyebrow">LUT HELPER</div>
+              <div class="page-breadcrumb">
+                <span>工作空间</span>
+                <span class="slash" aria-hidden="true">/</span>
+                <span class="page-current" data-breadcrumb>课程</span>
+              </div>
+            </div>
+            <span class="session-pill">
+              <span class="dot" aria-hidden="true"></span>
+              <span data-session="online">在线</span>
+            </span>
+          </div>
+
+          <div class="topbar-right">
+            <div class="batch-select-wrap">
+              <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M5 6.5h14v12H5z" />
+                <path d="M8 4v5M16 4v5M5 10h14" />
+              </svg>
+              <select class="batch-select" aria-label="切换选课批次" data-batch-select></select>
+            </div>
+            <button class="icon-button" type="button" data-action="mute" aria-label="静音提示音" aria-pressed="false">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M5 10v4h4l5 4V6l-5 4H5Z" />
+                <path d="M17 9.5a4 4 0 0 1 0 5" />
+              </svg>
+            </button>
+            <button class="icon-button" type="button" data-action="help" aria-label="帮助">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="12" r="8.5" />
+                <path d="M9.8 9a2.3 2.3 0 1 1 3.2 2.1c-.8.4-1 .9-1 1.8M12 16.4v.1" />
+              </svg>
+            </button>
+            <div class="user-chip" title="示例同学 · 2024********">
+              <div class="user-copy">
+                <span class="user-name" data-session="name">示例同学</span>
+                <span class="user-meta" data-session="college">计算机与人工智能学院</span>
+              </div>
+              <div class="avatar" aria-hidden="true">示</div>
+            </div>
+            <button class="icon-button" type="button" data-action="logout" aria-label="退出登录">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M10 5H6v14h4M14 8l4 4-4 4M9 12h9" />
+              </svg>
+            </button>
+          </div>
+        </header>
+
+        <div class="top-progress" aria-hidden="true"><span data-top-progress></span></div>
+
+        <div class="main-content">
+          <section class="page active" data-page-panel="courses" aria-label="课程工作台">
+            <div class="page-heading">
+              <div class="heading-copy">
+                <div class="heading-kicker">COURSE WORKSPACE</div>
+                <h1 class="page-title">把查课和抢课放在同一张桌面</h1>
+                <p class="page-subtitle">先选教学班，再编排首选与备选；所有请求状态集中在一处。</p>
+              </div>
+              <div class="page-actions">
+                <button class="button" type="button" data-action="refresh-courses">
+                  <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M20 7v5h-5M4 17v-5h5" />
+                    <path d="M6.5 8.2A7 7 0 0 1 18.8 11M17.5 15.8A7 7 0 0 1 5.2 13" />
+                  </svg>
+                  刷新课程
+                </button>
+                <button class="button primary" type="button" data-action="open-schedule">
+                  <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
+                    <circle cx="12" cy="12" r="8.5" />
+                    <path d="M12 7.5V12l3 2" />
+                  </svg>
+                  全局定时
+                </button>
+              </div>
+            </div>
+
+            <div class="workspace-grid">
+              <section class="card course-browser" aria-label="课程检索">
+                <div class="card-header">
+                  <div class="card-title-wrap">
+                    <div class="card-title">课程检索</div>
+                    <div class="card-subtitle" data-course-summary>当前轮次 · 6 个教学班</div>
+                  </div>
+                  <div class="card-tools">
+                    <button class="icon-button" type="button" data-action="column-menu" aria-label="配置课程列">
+                      <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M5 5h4v14H5zM10.5 5h3v14h-3zM15 5h4v14h-4z" />
+                      </svg>
+                    </button>
+                    <button class="icon-button" type="button" data-action="toggle-filters" aria-label="展开筛选" aria-expanded="false">
+                      <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M4 6h16M7 12h10M10 18h4" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="browser-toolbar">
+                  <div class="type-tabs" role="tablist" aria-label="课程类型">
+                    <button class="type-tab active" type="button" role="tab" aria-selected="true">系统推荐</button>
+                    <button class="type-tab" type="button" role="tab" aria-selected="false">方案内</button>
+                    <button class="type-tab" type="button" role="tab" aria-selected="false">体育</button>
+                    <button class="type-tab" type="button" role="tab" aria-selected="false">公选</button>
+                  </div>
+                  <span class="toolbar-divider" aria-hidden="true"></span>
+                  <select class="select-compact" aria-label="校区筛选" data-campus-filter>
+                    <option>彭家坪校区</option>
+                    <option>兰工坪校区</option>
+                    <option>网上学习</option>
+                  </select>
+                  <div class="search-field">
+                    <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
+                      <circle cx="11" cy="11" r="6.5" />
+                      <path d="m16 16 4 4" />
+                    </svg>
+                    <input class="search-input" type="search" placeholder="搜索课程名 / 教师" aria-label="搜索课程" data-course-search />
+                    <button class="search-clear" type="button" data-action="clear-search" aria-label="清空搜索" hidden>
+                      <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="m7 7 10 10M17 7 7 17" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="filter-panel" data-filter-panel hidden>
+                  <label class="filter-group">
+                    <button class="switch" type="button" role="switch" aria-checked="false" data-filter="available"></button>
+                    仅看有余量
+                  </label>
+                  <label class="filter-group">
+                    <button class="switch" type="button" role="switch" aria-checked="false" data-filter="conflict"></button>
+                    时间冲突
+                  </label>
+                  <span class="filter-group muted">教师筛选并入关键词搜索</span>
+                </div>
+
+                <div class="table-wrap">
+                  <table class="course-table">
+                    <thead>
+                      <tr>
+                        <th scope="col" style="width: 30px"><input class="checkbox" type="checkbox" aria-label="选择全部课程" data-select-all /></th>
+                        <th scope="col">课程</th>
+                        <th scope="col" data-column="capacity">余量</th>
+                        <th scope="col" data-column="teacher">教师</th>
+                        <th scope="col" data-column="time">时间地点</th>
+                        <th scope="col" data-column="status">状态</th>
+                        <th scope="col" style="width: 36px"><span class="sr-only">操作</span></th>
+                      </tr>
+                    </thead>
+                    <tbody data-course-body></tbody>
+                  </table>
+                </div>
+
+                <div class="table-footer">
+                  <span data-selection-count>未选择课程</span>
+                  <span class="spacer"></span>
+                  <button class="button small primary" type="button" data-action="batch-add" disabled>
+                    <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M12 5v14M5 12h14" />
+                    </svg>
+                    加入抢课队列
+                  </button>
+                </div>
+              </section>
+
+              <aside class="card queue-panel" aria-label="抢课课程组">
+                <div class="queue-header">
+                  <div class="queue-header-copy">
+                    <div class="queue-title">
+                      抢课队列
+                      <span class="count-badge" data-group-count>3</span>
+                    </div>
+                    <div class="queue-subtitle">同课程按加入顺序形成首选与备选</div>
+                  </div>
+                  <div class="queue-actions">
+                    <button class="icon-button" type="button" data-action="start-all" aria-label="开始全部课程组">
+                      <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="m8 5 11 7-11 7V5Z" />
+                      </svg>
+                    </button>
+                    <button class="icon-button" type="button" data-action="stop-all" aria-label="停止全部课程组">
+                      <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                        <rect x="6" y="6" width="12" height="12" rx="1" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="parameters-strip">
+                  <label class="parameter">
+                    <span class="parameter-label">请求间隔</span>
+                    <span class="parameter-value">
+                      <select aria-label="请求间隔" data-param="interval">
+                        <option value="50">50 ms</option>
+                        <option value="100" selected>100 ms</option>
+                        <option value="200">200 ms</option>
+                        <option value="500">500 ms</option>
+                      </select>
+                    </span>
+                  </label>
+                  <label class="parameter">
+                    <span class="parameter-label">每课线程</span>
+                    <span class="parameter-value">
+                      <select aria-label="每课线程数" data-param="threads">
+                        <option value="1">1</option>
+                        <option value="3" selected>3</option>
+                        <option value="5">5</option>
+                        <option value="10">10</option>
+                      </select>
+                    </span>
+                  </label>
+                  <label class="parameter">
+                    <span class="parameter-label">抢到即停</span>
+                    <span class="parameter-value">
+                      <button class="switch" type="button" role="switch" aria-checked="true" data-param="auto-stop"></button>
+                    </span>
+                  </label>
+                  <span class="thread-load" data-thread-load>预计 9 线程</span>
+                </div>
+
+                <div class="schedule-box">
+                  <div class="schedule-main">
+                    <span class="schedule-icon">
+                      <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
+                        <circle cx="12" cy="12" r="8.5" />
+                        <path d="M12 7.5V12l3 2" />
+                      </svg>
+                    </span>
+                    <div class="schedule-copy">
+                      <div class="schedule-title">全局定时 <span class="schedule-countdown" data-countdown>未设置</span></div>
+                    </div>
+                    <button class="button small ghost" type="button" data-action="toggle-schedule" aria-expanded="false">
+                      <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="m6 9 6 6 6-6" />
+                      </svg>
+                    </button>
+                  </div>
+                  <div class="schedule-expand" data-schedule-expand hidden>
+                    <input type="datetime-local" step="1" aria-label="全局定时时间" data-schedule-input />
+                    <button class="button small primary" type="button" data-action="set-schedule">设置</button>
+                  </div>
+                </div>
+
+                <div class="group-list" data-group-list></div>
+              </aside>
+            </div>
+          </section>
+
+          <section class="page" data-page-panel="all-courses" aria-label="全校课程">
+            <div class="page-heading">
+              <div class="heading-copy">
+                <div class="heading-kicker">FULL CATALOG</div>
+                <h1 class="page-title">全校课程查询</h1>
+                <p class="page-subtitle">手动加载完整列表，再在本地筛选；挑选教学班后批量加入课程组。</p>
+              </div>
+              <div class="page-actions">
+                <button class="button" type="button" data-action="load-all">
+                  <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M12 4v12M7 11l5 5 5-5M5 20h14" />
+                  </svg>
+                  加载全校课程
+                </button>
+              </div>
+            </div>
+
+            <div class="all-courses-layout">
+              <section class="card all-courses-card">
+                <div class="all-courses-toolbar">
+                  <div class="search-field" style="max-width: 260px">
+                    <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
+                      <circle cx="11" cy="11" r="6.5" />
+                      <path d="m16 16 4 4" />
+                    </svg>
+                    <input class="search-input" type="search" placeholder="关键词 / 教师" aria-label="筛选全校课程" data-all-search />
+                  </div>
+                  <select class="select-compact" aria-label="校区筛选" data-all-campus>
+                    <option value="">全部校区</option>
+                    <option>彭家坪校区</option>
+                    <option>兰工坪校区</option>
+                    <option>网上学习</option>
+                  </select>
+                  <div class="load-progress" data-all-progress>
+                    <div class="load-progress-bar"><span></span></div>
+                    <span>尚未加载</span>
+                  </div>
+                  <span style="flex: 1"></span>
+                  <button class="button small" type="button" data-action="select-visible">全选当前结果</button>
+                </div>
+                <div class="table-wrap">
+                  <table class="course-table">
+                    <thead>
+                      <tr>
+                        <th scope="col" style="width: 30px"><input class="checkbox" type="checkbox" aria-label="选择全部全校课程" data-all-select-all /></th>
+                        <th scope="col">课程</th>
+                        <th scope="col">余量</th>
+                        <th scope="col">教师</th>
+                        <th scope="col">时间地点</th>
+                        <th scope="col">状态</th>
+                      </tr>
+                    </thead>
+                    <tbody data-all-body></tbody>
+                  </table>
+                </div>
+                <div class="table-footer">
+                  <span data-all-count>等待加载</span>
+                  <span class="spacer"></span>
+                  <span class="muted">服务器关键词筛选已关闭</span>
+                </div>
+              </section>
+
+              <aside class="card basket-card">
+                <div class="card-header">
+                  <div class="card-title-wrap">
+                    <div class="card-title">待加入教学班</div>
+                    <div class="card-subtitle">按表格顺序形成首选与备选</div>
+                  </div>
+                  <span class="count-badge" data-basket-count>0</span>
+                </div>
+                <div class="basket-list" data-basket-list>
+                  <div class="empty-state" style="min-height: 190px">
+                    <div class="empty-inner">
+                      <div class="empty-mark">
+                        <svg class="icon icon-lg" viewBox="0 0 24 24" aria-hidden="true">
+                          <path d="M5 7h14l-1.2 10H6.2L5 7Z" />
+                          <path d="M9 7a3 3 0 0 1 6 0" />
+                        </svg>
+                      </div>
+                      <h3 class="empty-title">还没有选择教学班</h3>
+                      <p class="empty-copy">在左侧勾选后，点击下方按钮加入待选。</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="basket-footer">
+                  <div class="basket-total"><span>将创建课程组</span><strong data-basket-groups>0</strong></div>
+                  <button class="button primary" type="button" data-action="all-batch-add" disabled>
+                    <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M12 5v14M5 12h14" />
+                    </svg>
+                    加入抢课队列
+                  </button>
+                </div>
+              </aside>
+            </div>
+          </section>
+
+          <section class="page" data-page-panel="selected" aria-label="已选课程">
+            <div class="page-heading">
+              <div class="heading-copy">
+                <div class="heading-kicker">MY TIMETABLE</div>
+                <h1 class="page-title">已选课程与课表</h1>
+                <p class="page-subtitle">左侧核对课程，右侧查看周网格；冲突和未排入课程都不会被隐藏。</p>
+              </div>
+              <div class="page-actions">
+                <button class="button" type="button" data-action="refresh-selected">
+                  <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M20 7v5h-5M4 17v-5h5" />
+                    <path d="M6.5 8.2A7 7 0 0 1 18.8 11M17.5 15.8A7 7 0 0 1 5.2 13" />
+                  </svg>
+                  刷新
+                </button>
+              </div>
+            </div>
+
+            <div class="selected-layout">
+              <section class="card selected-list-card">
+                <div class="card-header">
+                  <div class="card-title-wrap">
+                    <div class="card-title">已选课程</div>
+                    <div class="card-subtitle">共 7 门 · 2 处时间冲突</div>
+                  </div>
+                  <span class="status-chip warn">有冲突</span>
+                </div>
+                <div class="table-wrap">
+                  <table class="selected-table">
+                    <thead>
+                      <tr>
+                        <th scope="col">课程</th>
+                        <th scope="col">教师</th>
+                        <th scope="col">星期 / 节次</th>
+                      </tr>
+                    </thead>
+                    <tbody data-selected-body></tbody>
+                  </table>
+                </div>
+                <div class="drop-history" data-drop-history>
+                  <div class="drop-history-head" role="button" tabindex="0" aria-expanded="false">
+                    <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M4 7h16M9 7V4h6v3M7 7l1 13h8l1-13" />
+                    </svg>
+                    退课记录
+                    <span class="count-badge">2</span>
+                    <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="m6 9 6 6 6-6" />
+                    </svg>
+                  </div>
+                  <div class="drop-history-body" hidden data-drop-body></div>
+                </div>
+              </section>
+
+              <section class="card timetable-card">
+                <div class="card-header">
+                  <div class="card-title-wrap">
+                    <div class="card-title">周课表</div>
+                    <div class="card-subtitle">结构字段优先，文本解析回退</div>
+                  </div>
+                  <div class="card-tools">
+                    <span class="week-pill" data-week-pill>全部周次</span>
+                  </div>
+                </div>
+                <div class="timetable-toolbar">
+                  <select class="select-compact" aria-label="选择周次" data-week-select>
+                    <option value="all">全部周次</option>
+                  </select>
+                  <span class="muted" style="font-size: 9px" data-week-summary>全部周次 · 7 门课程</span>
+                  <span style="flex: 1"></span>
+                  <span class="status-chip">1–12 节</span>
+                </div>
+                <div class="timetable-wrap">
+                  <div class="timetable" data-timetable></div>
+                </div>
+                <div class="unplaced-list" data-unplaced></div>
+              </section>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+
+    <div class="info-bar" role="status" aria-live="polite" data-info-bar hidden>
+      <span class="info-icon">
+        <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="m6 12 4 4 8-9" />
+        </svg>
+      </span>
+      <div class="info-copy">
+        <div class="info-title" data-info-title>操作已完成</div>
+        <div class="info-message" data-info-message></div>
+      </div>
+      <button class="info-close" type="button" data-action="close-info" aria-label="关闭提示">
+        <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="m7 7 10 10M17 7 7 17" />
+        </svg>
+      </button>
+    </div>
+
+    <aside class="log-dock" data-log-dock>
+      <div class="log-handle" role="button" tabindex="0" aria-expanded="false" data-log-toggle>
+        <span class="log-handle-icon">
+          <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M5 6h14v12H5zM8 9h8M8 12h5M8 15h7" />
+          </svg>
+        </span>
+        <div class="log-handle-copy">
+          <div class="log-handle-title">请求日志</div>
+          <div class="log-handle-meta" data-log-count>8 条记录 · 2 个活跃任务</div>
+        </div>
+        <span class="log-latest" data-log-latest>尚未收到新日志</span>
+        <svg class="icon icon-sm icon-chevron" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="m6 9 6 6 6-6" />
+        </svg>
+      </div>
+      <div class="log-body">
+        <div class="log-toolbar">
+          <div class="log-filters">
+            <select class="select-compact" aria-label="按课程组筛选日志" data-log-group>
+              <option value="all">全部课程组</option>
+            </select>
+            <select class="select-compact" aria-label="按级别筛选日志" data-log-level>
+              <option value="all">全部级别</option>
+              <option value="INFO">INFO</option>
+              <option value="SUCCESS">SUCCESS</option>
+              <option value="WARN">WARN</option>
+              <option value="ERROR">ERROR</option>
+            </select>
+          </div>
+          <span class="spacer"></span>
+          <button class="button small ghost" type="button" data-action="export-log">导出</button>
+          <button class="button small ghost danger" type="button" data-action="clear-log">清空</button>
+        </div>
+        <div class="log-list" data-log-list></div>
+        <button class="log-to-bottom" type="button" data-action="log-bottom" hidden>
+          回到最新
+          <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 5v14M7 14l5 5 5-5" />
+          </svg>
+        </button>
+      </div>
+    </aside>
+
+    <div class="detail-scrim" data-detail-scrim hidden></div>
+    <aside class="detail-drawer" aria-label="课程详情" aria-hidden="true" data-detail-drawer>
+      <div class="drawer-head">
+        <div class="drawer-title">
+          <div class="drawer-kicker">COURSE DETAIL</div>
+          <h2 data-detail-title>课程详情</h2>
+          <p data-detail-subtitle>从课程表格选择一门课</p>
+        </div>
+        <button class="icon-button" type="button" data-action="close-detail" aria-label="关闭课程详情">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="m7 7 10 10M17 7 7 17" />
+          </svg>
+        </button>
+      </div>
+      <div class="drawer-body" data-detail-body></div>
+      <div class="drawer-footer">
+        <button class="button primary" type="button" data-action="detail-add">
+          <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 5v14M5 12h14" />
+          </svg>
+          加入抢课队列
+        </button>
+        <button class="button" type="button" data-action="close-detail">关闭</button>
+      </div>
+    </aside>
+
+    <div class="modal-scrim" data-modal-scrim hidden></div>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="dup-title" data-modal hidden>
+      <div class="modal-head">
+        <span class="modal-mark">
+          <svg class="icon icon-lg" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 4 3.7 19h16.6L12 4Z" />
+            <path d="M12 9v4M12 16.5v.1" />
+          </svg>
+        </span>
+        <div class="modal-copy">
+          <h3 id="dup-title" data-modal-title>该教学班已在课程组中</h3>
+          <p data-modal-copy>课程组内每个教学班只保留一个实例，可以选择忽略，或把已有实例移到备选末尾。</p>
+        </div>
+      </div>
+      <div class="modal-body">
+        <div class="modal-note" data-modal-note>课程名称占位 A · 01 班 · 教师甲</div>
+      </div>
+      <div class="modal-actions">
+        <button class="button ghost" type="button" data-action="modal-cancel">取消</button>
+        <button class="button" type="button" data-action="modal-move">移到末尾</button>
+        <button class="button primary" type="button" data-action="modal-ignore">忽略重复</button>
+      </div>
+    </div>
+
+    <div data-menu-root></div>
+    <div class="toast-region" data-toast-region></div>
+    <script src="assets/mock-data.js"></script>
+    <script src="assets/app.js"></script>
+  </body>
+</html>
