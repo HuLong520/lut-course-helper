@@ -346,7 +346,9 @@
   }
 
   function updateThreadLoad() {
-    const threads = Number($('[data-param="threads"]')?.value || 3);
+    const input = $('[data-param="threads"]');
+    const threads = Math.min(20, Math.max(1, Number(input?.value) || 3));
+    if (input && input.value && Number(input.value) !== threads) input.value = String(threads);
     const activeTasks = state.groups.reduce(
       (count, group) => count + group.tasks.filter((task) => task.state === "active").length,
       0,
@@ -958,8 +960,10 @@
     $("[data-menu-delete]", menu).addEventListener("click", () => {
       group.tasks = group.tasks.filter((item) => item.id !== task.id);
       if (!group.tasks.length) state.groups = state.groups.filter((item) => item.id !== group.id);
+      renderCourses();
       renderGroups();
       closePopover();
+      showInfo("教学班已从抢课队列移除。", "已移除");
     });
   }
 
@@ -1094,7 +1098,8 @@
       }
     });
     $("[data-campus-filter]").addEventListener("change", applyCourseFilters);
-    $('[data-param="threads"]').addEventListener("change", updateThreadLoad);
+    $('[data-param="threads"]').addEventListener("input", updateThreadLoad);
+    $('[data-param="threads"]').addEventListener("blur", updateThreadLoad);
     $$(".type-tab").forEach((tab) => {
       tab.addEventListener("click", () => {
         $$(".type-tab").forEach((item) => {

@@ -1430,7 +1430,8 @@ svg {
   font-weight: 700;
 }
 
-.parameter-value select {
+.parameter-value select,
+.parameter-value .parameter-number {
   width: 100%;
   min-width: 50px;
   padding: 3px 19px 3px 5px;
@@ -1443,6 +1444,12 @@ svg {
     no-repeat right 5px center;
   border: 1px solid var(--line);
   border-radius: 5px;
+}
+
+.parameter-value .parameter-number {
+  padding-right: 5px;
+  background-image: none;
+  text-align: center;
 }
 
 .thread-load {
