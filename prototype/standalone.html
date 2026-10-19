@@ -1,0 +1,6740 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>抢课助手</title>
+<style>
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700&display=swap");
+
+:root {
+  --bg: #f4f1e9;
+  --bg-deep: #ebe6dc;
+  --surface: #fffdf8;
+  --surface-soft: #f9f6ef;
+  --surface-tint: #eef7f2;
+  --ink: #1b2924;
+  --ink-soft: #40504a;
+  --muted: #79827d;
+  --faint: #a9aea9;
+  --line: #e3ded2;
+  --line-strong: #d5cfc2;
+  --teal: #147d6d;
+  --teal-strong: #0d675a;
+  --teal-soft: #dcefe8;
+  --teal-pale: #f1faf6;
+  --amber: #b97713;
+  --amber-soft: #fbefd9;
+  --red: #bb4b42;
+  --red-soft: #fbe8e4;
+  --blue: #3e6f9b;
+  --blue-soft: #eaf2f8;
+  --nav: #163229;
+  --nav-deep: #10241e;
+  --nav-text: #d9e9e1;
+  --shadow-sm: 0 1px 2px rgba(28, 38, 33, 0.04), 0 6px 18px rgba(28, 38, 33, 0.035);
+  --shadow-md: 0 16px 42px rgba(28, 38, 33, 0.09);
+  --shadow-lg: 0 30px 80px rgba(15, 31, 25, 0.2);
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-xl: 26px;
+  --font-sans: "Manrope", "Segoe UI Variable", "Microsoft YaHei UI", "Noto Sans SC", sans-serif;
+  --font-cn: "Noto Sans SC", "Microsoft YaHei UI", "Segoe UI Variable", sans-serif;
+  --transition: 180ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  color-scheme: light;
+  background: var(--bg);
+}
+
+body {
+  margin: 0;
+  min-width: 100%;
+  min-height: 100vh;
+  color: var(--ink);
+  background:
+    radial-gradient(circle at 8% 0%, rgba(255, 253, 248, 0.96) 0, transparent 31rem),
+    radial-gradient(circle at 100% 100%, rgba(207, 234, 224, 0.5) 0, transparent 30rem),
+    var(--bg);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+button {
+  color: inherit;
+}
+
+button,
+[role="button"],
+select,
+label {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+[tabindex]:focus-visible {
+  outline: 3px solid rgba(20, 125, 109, 0.22);
+  outline-offset: 2px;
+}
+
+svg {
+  display: block;
+}
+
+.icon {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.icon-sm {
+  width: 15px;
+  height: 15px;
+}
+
+.icon-lg {
+  width: 22px;
+  height: 22px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.mono {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+.app-shell {
+  display: grid;
+  grid-template-columns: 224px minmax(0, 1fr);
+  min-height: 100vh;
+}
+
+.sidebar {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  padding: 20px 14px 16px;
+  overflow: hidden;
+  color: var(--nav-text);
+  background:
+    radial-gradient(circle at 14% 2%, rgba(54, 126, 104, 0.25), transparent 19rem),
+    linear-gradient(165deg, var(--nav) 0%, var(--nav-deep) 100%);
+}
+
+.sidebar::after {
+  position: absolute;
+  right: -76px;
+  bottom: 80px;
+  width: 240px;
+  height: 240px;
+  content: "";
+  border: 1px solid rgba(196, 231, 217, 0.09);
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 28px rgba(196, 231, 217, 0.025),
+    0 0 0 64px rgba(196, 231, 217, 0.018);
+  pointer-events: none;
+}
+
+.brand {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 2px 8px 22px;
+}
+
+.brand-mark {
+  position: relative;
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  color: #12372d;
+  background: #d7eee5;
+  border-radius: 12px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.45);
+}
+
+.brand-mark::after {
+  position: absolute;
+  inset: 7px;
+  content: "";
+  border: 1px solid rgba(18, 55, 45, 0.24);
+  border-radius: 6px;
+}
+
+.brand-mark .icon {
+  position: relative;
+  z-index: 1;
+  width: 20px;
+  height: 20px;
+  stroke-width: 1.7;
+}
+
+.brand-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.brand-name {
+  color: #f4fbf7;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.brand-meta {
+  color: rgba(220, 239, 230, 0.56);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.nav-section {
+  position: relative;
+  z-index: 1;
+  margin-top: 14px;
+}
+
+.nav-label {
+  padding: 0 11px 8px;
+  color: rgba(220, 239, 230, 0.42);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+.nav-list {
+  display: grid;
+  gap: 5px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nav-link {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 11px 12px;
+  color: rgba(222, 239, 231, 0.68);
+  text-align: left;
+  background: transparent;
+  border: 0;
+  border-radius: 11px;
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition), transform var(--transition);
+}
+
+.nav-link::before {
+  position: absolute;
+  left: 0;
+  width: 3px;
+  height: 17px;
+  content: "";
+  background: #9ed9c6;
+  border-radius: 0 3px 3px 0;
+  opacity: 0;
+  transform: translateX(-12px);
+  transition: opacity var(--transition), transform var(--transition);
+}
+
+.nav-link:hover {
+  color: #f2fbf6;
+  background: rgba(255, 255, 255, 0.055);
+}
+
+.nav-link.active {
+  color: #ffffff;
+  background: rgba(198, 234, 220, 0.12);
+}
+
+.nav-link.active::before {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.nav-link .nav-count {
+  min-width: 21px;
+  margin-left: auto;
+  padding: 1px 6px;
+  color: #bce2d4;
+  font-size: 10px;
+  font-weight: 700;
+  text-align: center;
+  background: rgba(188, 226, 212, 0.12);
+  border-radius: 999px;
+}
+
+.sidebar-footer {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 10px;
+  margin-top: auto;
+  padding: 14px 6px 0;
+}
+
+.batch-note {
+  padding: 13px;
+  background: rgba(255, 255, 255, 0.045);
+  border: 1px solid rgba(218, 239, 230, 0.08);
+  border-radius: 13px;
+}
+
+.batch-note-label {
+  color: rgba(222, 239, 231, 0.44);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.11em;
+}
+
+.batch-note-title {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 6px;
+  color: #e7f5ee;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.batch-note-dot {
+  width: 6px;
+  height: 6px;
+  flex: 0 0 auto;
+  background: #75c9ad;
+  border-radius: 50%;
+  box-shadow: 0 0 0 4px rgba(117, 201, 173, 0.09);
+}
+
+.shell-main {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 25;
+  display: flex;
+  min-height: 72px;
+  align-items: center;
+  gap: 18px;
+  padding: 11px 26px;
+  background: rgba(255, 253, 248, 0.88);
+  border-bottom: 1px solid rgba(213, 207, 194, 0.8);
+  backdrop-filter: blur(16px);
+}
+
+.topbar-left {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 10px;
+}
+
+.eyebrow {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.page-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--ink-soft);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.page-breadcrumb .slash {
+  color: var(--faint);
+}
+
+.session-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 9px;
+  color: var(--teal-strong);
+  font-size: 11px;
+  font-weight: 700;
+  background: var(--teal-pale);
+  border: 1px solid #cfe7dd;
+  border-radius: 999px;
+}
+
+.session-pill .dot {
+  width: 6px;
+  height: 6px;
+  background: #28a486;
+  border-radius: 50%;
+  box-shadow: 0 0 0 3px rgba(40, 164, 134, 0.1);
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+}
+
+.batch-select-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.batch-select-wrap .icon {
+  position: absolute;
+  left: 10px;
+  z-index: 1;
+  color: var(--muted);
+  pointer-events: none;
+}
+
+.batch-select {
+  max-width: 208px;
+  padding: 8px 28px 8px 32px;
+  overflow: hidden;
+  color: var(--ink-soft);
+  font-size: 11px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  appearance: none;
+  background: var(--surface-soft)
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2379827d' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")
+    no-repeat right 10px center;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  cursor: pointer;
+}
+
+.icon-button {
+  display: inline-grid;
+  width: 36px;
+  height: 36px;
+  flex: 0 0 auto;
+  place-items: center;
+  color: var(--ink-soft);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  cursor: pointer;
+  transition: background var(--transition), border-color var(--transition), color var(--transition);
+}
+
+.icon-button:hover {
+  color: var(--ink);
+  background: var(--surface-soft);
+  border-color: var(--line);
+}
+
+.icon-button.is-muted {
+  color: var(--faint);
+}
+
+.icon-button.active {
+  color: var(--teal);
+  background: var(--teal-pale);
+  border-color: #cfe7dd;
+}
+
+.user-chip {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 4px 4px 4px 10px;
+  background: var(--surface-soft);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
+.user-copy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0;
+  line-height: 1.35;
+}
+
+.user-name {
+  max-width: 150px;
+  overflow: hidden;
+  color: var(--ink);
+  font-size: 11px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.user-meta {
+  max-width: 180px;
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 9px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.avatar {
+  display: grid;
+  width: 31px;
+  height: 31px;
+  place-items: center;
+  color: var(--teal-strong);
+  font-size: 11px;
+  font-weight: 800;
+  background: #d9eee6;
+  border-radius: 9px;
+}
+
+.main-content {
+  flex: 1;
+  min-height: 0;
+  padding: 22px 26px 86px;
+}
+
+.page {
+  display: none;
+  animation: page-in 240ms ease-out both;
+}
+
+.page.active {
+  display: block;
+}
+
+@keyframes page-in {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.page-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 17px;
+}
+
+.heading-copy {
+  min-width: 0;
+}
+
+.heading-kicker {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 5px;
+  color: var(--teal);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.heading-kicker::before {
+  width: 18px;
+  height: 1px;
+  content: "";
+  background: var(--teal);
+}
+
+.page-title {
+  margin: 0;
+  color: var(--ink);
+  font-family: var(--font-cn);
+  font-size: clamp(22px, 2.1vw, 29px);
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 1.2;
+}
+
+.page-subtitle {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.page-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.button {
+  display: inline-flex;
+  min-height: 36px;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 7px 12px;
+  color: var(--ink-soft);
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  border-radius: 9px;
+  cursor: pointer;
+  transition: background var(--transition), border-color var(--transition), color var(--transition), box-shadow var(--transition);
+}
+
+.button:hover {
+  color: var(--ink);
+  background: #ffffff;
+  border-color: #bfc8c2;
+  box-shadow: var(--shadow-sm);
+}
+
+.button.primary {
+  color: #ffffff;
+  background: var(--teal);
+  border-color: var(--teal);
+  box-shadow: 0 7px 16px rgba(20, 125, 109, 0.17);
+}
+
+.button.primary:hover {
+  background: var(--teal-strong);
+  border-color: var(--teal-strong);
+}
+
+.button.ghost {
+  background: transparent;
+  border-color: transparent;
+}
+
+.button.ghost:hover {
+  background: var(--surface-soft);
+  border-color: var(--line);
+}
+
+.button.danger {
+  color: var(--red);
+  border-color: #eccdc9;
+}
+
+.button.danger:hover {
+  background: var(--red-soft);
+  border-color: #e2bcb6;
+}
+
+.button.small {
+  min-height: 30px;
+  padding: 5px 9px;
+  font-size: 10px;
+}
+
+.button .spinner {
+  width: 13px;
+  height: 13px;
+  border: 2px solid rgba(255, 255, 255, 0.34);
+  border-top-color: currentColor;
+  border-radius: 50%;
+  animation: spin 700ms linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.card {
+  position: relative;
+  min-width: 0;
+  background: rgba(255, 253, 248, 0.94);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.card-header {
+  display: flex;
+  min-height: 57px;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 15px;
+  border-bottom: 1px solid var(--line);
+}
+
+.card-title-wrap {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.card-title {
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.card-subtitle {
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.card-tools {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.count-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 20px;
+  padding: 0 6px;
+  color: var(--teal-strong);
+  font-size: 10px;
+  font-weight: 800;
+  background: var(--teal-pale);
+  border-radius: 6px;
+}
+
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 7px;
+  color: var(--ink-soft);
+  font-size: 9px;
+  font-weight: 700;
+  white-space: nowrap;
+  background: var(--surface-soft);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+}
+
+.status-chip::before {
+  width: 5px;
+  height: 5px;
+  content: "";
+  background: var(--faint);
+  border-radius: 50%;
+}
+
+.status-chip.live {
+  color: var(--teal-strong);
+  background: var(--teal-pale);
+  border-color: #cfe7dd;
+}
+
+.status-chip.live::before {
+  background: #27a283;
+  box-shadow: 0 0 0 3px rgba(39, 162, 131, 0.1);
+}
+
+.status-chip.warn {
+  color: var(--amber);
+  background: var(--amber-soft);
+  border-color: #f1dfba;
+}
+
+.status-chip.warn::before {
+  background: #d19632;
+}
+
+.status-chip.danger {
+  color: var(--red);
+  background: var(--red-soft);
+  border-color: #efd4d0;
+}
+
+.status-chip.danger::before {
+  background: #c75a4d;
+}
+
+.status-chip.neutral::before {
+  background: #9ca39e;
+}
+
+.workspace-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.62fr) minmax(330px, 0.98fr);
+  gap: 16px;
+  align-items: stretch;
+}
+
+.course-browser,
+.queue-panel {
+  min-height: calc(100vh - 196px);
+}
+
+.course-browser {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.browser-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 15px 10px;
+  border-bottom: 1px solid var(--line);
+}
+
+.type-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 3px;
+  background: var(--surface-soft);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+
+.type-tab {
+  min-height: 28px;
+  padding: 4px 9px;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 700;
+  background: transparent;
+  border: 0;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition), box-shadow var(--transition);
+}
+
+.type-tab:hover {
+  color: var(--ink-soft);
+}
+
+.type-tab.active {
+  color: var(--ink);
+  background: var(--surface);
+  box-shadow: 0 1px 2px rgba(25, 35, 31, 0.08);
+}
+
+.toolbar-divider {
+  width: 1px;
+  height: 22px;
+  margin: 0 2px;
+  background: var(--line);
+}
+
+.select-compact {
+  height: 32px;
+  padding: 4px 28px 4px 9px;
+  color: var(--ink-soft);
+  font-size: 10px;
+  font-weight: 600;
+  appearance: none;
+  background: var(--surface-soft)
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2379827d' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")
+    no-repeat right 9px center;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.search-field {
+  position: relative;
+  display: flex;
+  min-width: 170px;
+  height: 32px;
+  align-items: center;
+  flex: 1;
+}
+
+.search-field .icon {
+  position: absolute;
+  left: 10px;
+  color: var(--faint);
+  pointer-events: none;
+}
+
+.search-input {
+  width: 100%;
+  height: 100%;
+  padding: 4px 30px 4px 32px;
+  color: var(--ink);
+  font-size: 10px;
+  outline: 0;
+  background: var(--surface-soft);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  transition: border-color var(--transition), background var(--transition), box-shadow var(--transition);
+}
+
+.search-input::placeholder {
+  color: var(--faint);
+}
+
+.search-input:focus {
+  background: #ffffff;
+  border-color: #93c8b7;
+  box-shadow: 0 0 0 3px rgba(20, 125, 109, 0.08);
+}
+
+.search-clear {
+  position: absolute;
+  right: 5px;
+  display: grid;
+  width: 22px;
+  height: 22px;
+  place-items: center;
+  color: var(--faint);
+  background: transparent;
+  border: 0;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.search-clear:hover {
+  color: var(--ink-soft);
+  background: var(--bg-deep);
+}
+
+.filter-panel {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 15px;
+  padding: 10px 15px;
+  background: #f8f6f0;
+  border-bottom: 1px solid var(--line);
+  animation: panel 180ms ease-out both;
+}
+
+@keyframes panel {
+  from {
+    opacity: 0;
+    transform: translateY(-3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.filter-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--ink-soft);
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.switch {
+  position: relative;
+  display: inline-flex;
+  width: 29px;
+  height: 17px;
+  flex: 0 0 auto;
+  align-items: center;
+  padding: 2px;
+  background: #d6d9d5;
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background var(--transition);
+}
+
+.switch::after {
+  width: 13px;
+  height: 13px;
+  content: "";
+  background: #ffffff;
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(22, 39, 32, 0.2);
+  transition: transform var(--transition);
+}
+
+.switch[aria-checked="true"] {
+  background: var(--teal);
+}
+
+.switch[aria-checked="true"]::after {
+  transform: translateX(12px);
+}
+
+.table-wrap {
+  min-width: 0;
+  overflow: auto;
+}
+
+.course-table,
+.selected-table {
+  width: 100%;
+  min-width: 720px;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 10px;
+}
+
+.course-table th,
+.selected-table th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  padding: 10px 10px;
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 700;
+  text-align: left;
+  white-space: nowrap;
+  background: #faf8f3;
+  border-bottom: 1px solid var(--line);
+}
+
+.course-table td,
+.selected-table td {
+  height: 52px;
+  padding: 8px 10px;
+  color: var(--ink-soft);
+  vertical-align: middle;
+  border-bottom: 1px solid #eeeae1;
+}
+
+.course-table tbody tr,
+.selected-table tbody tr {
+  transition: background var(--transition);
+}
+
+.course-table tbody tr:hover,
+.selected-table tbody tr:hover {
+  background: #fbfaf6;
+}
+
+.course-table tbody tr.is-selected {
+  background: var(--teal-pale);
+}
+
+.course-table tbody tr.is-selected td:first-child {
+  box-shadow: inset 3px 0 0 var(--teal);
+}
+
+.course-table th:first-child,
+.course-table td:first-child,
+.selected-table th:first-child,
+.selected-table td:first-child {
+  padding-left: 15px;
+}
+
+.course-table th:last-child,
+.course-table td:last-child,
+.selected-table th:last-child,
+.selected-table td:last-child {
+  padding-right: 15px;
+}
+
+.checkbox {
+  position: relative;
+  display: inline-grid;
+  width: 15px;
+  height: 15px;
+  place-items: center;
+  appearance: none;
+  background: #ffffff;
+  border: 1px solid #c7cec9;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.checkbox::after {
+  width: 7px;
+  height: 4px;
+  content: "";
+  border-bottom: 2px solid #ffffff;
+  border-left: 2px solid #ffffff;
+  opacity: 0;
+  transform: translateY(-1px) rotate(-45deg);
+}
+
+.checkbox:checked {
+  background: var(--teal);
+  border-color: var(--teal);
+}
+
+.checkbox:checked::after {
+  opacity: 1;
+}
+
+.add-course {
+  display: inline-flex;
+  min-height: 27px;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  padding: 3px;
+  color: var(--teal-strong);
+  font-size: 8px;
+  font-weight: 700;
+  white-space: nowrap;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: color var(--transition), background var(--transition), border-color var(--transition);
+}
+
+.add-course > span {
+  display: none;
+}
+
+.add-course > .icon {
+  width: 24px;
+  height: 24px;
+  padding: 5px;
+  background: var(--teal-pale);
+  border: 1px solid #cfe4dc;
+  border-radius: 50%;
+}
+
+.add-course:hover {
+  color: var(--teal);
+  background: transparent;
+  border-color: transparent;
+}
+
+.add-course:hover > .icon {
+  color: #ffffff;
+  background: var(--teal);
+  border-color: var(--teal);
+}
+
+.add-course.is-added,
+.add-course:disabled {
+  color: var(--teal-strong);
+  background: transparent;
+  border-color: transparent;
+  cursor: pointer;
+  opacity: 1;
+}
+
+.add-course.is-added > .icon {
+  color: #ffffff;
+  background: var(--teal);
+  border-color: var(--teal);
+}
+
+.add-course.is-added:hover {
+  color: var(--red);
+  background: transparent;
+  border-color: transparent;
+}
+
+.add-course.is-added:hover > .icon {
+  color: #ffffff;
+  background: var(--red);
+  border-color: var(--red);
+}
+
+.course-table tbody tr.is-added {
+  background: #fbfdfb;
+}
+
+.course-table tbody tr.is-added td:first-child {
+  box-shadow: inset 2px 0 0 #8dcbbb;
+}
+
+.course-name {
+  max-width: 210px;
+  overflow: hidden;
+  color: var(--ink);
+  font-size: 11px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.course-name-button {
+  display: block;
+  max-width: 100%;
+  padding: 0;
+  overflow: hidden;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+.course-name-button:hover {
+  color: var(--teal-strong);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.course-code {
+  margin-top: 2px;
+  color: var(--faint);
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.capacity {
+  display: flex;
+  min-width: 82px;
+  align-items: center;
+  gap: 8px;
+}
+
+.capacity-bar {
+  width: 48px;
+  height: 4px;
+  overflow: hidden;
+  background: #e8e5dd;
+  border-radius: 999px;
+}
+
+.capacity-bar span {
+  display: block;
+  height: 100%;
+  background: var(--teal);
+  border-radius: inherit;
+}
+
+.capacity-bar.warn span {
+  background: #c58a2c;
+}
+
+.capacity-bar.full span {
+  background: #c55e51;
+}
+
+.capacity-text {
+  color: var(--ink-soft);
+  font-size: 9px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.teacher {
+  max-width: 92px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.time-cell {
+  max-width: 196px;
+  overflow: hidden;
+  color: var(--muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.conflict-mark {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  height: 18px;
+  padding: 0 5px;
+  color: var(--red);
+  font-size: 8px;
+  font-weight: 700;
+  background: var(--red-soft);
+  border-radius: 4px;
+}
+
+.conflict-mark .icon {
+  width: 10px;
+  height: 10px;
+}
+
+.more-button {
+  display: inline-grid;
+  width: 27px;
+  height: 27px;
+  place-items: center;
+  color: var(--muted);
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.more-button:hover {
+  color: var(--ink);
+  background: var(--surface-soft);
+}
+
+.table-footer {
+  display: flex;
+  min-height: 46px;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 15px;
+  color: var(--muted);
+  font-size: 9px;
+  border-top: 1px solid var(--line);
+}
+
+.table-footer .selection-summary {
+  color: var(--teal-strong);
+  font-weight: 700;
+}
+
+.table-footer .spacer {
+  flex: 1;
+}
+
+.queue-panel {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.queue-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 15px 12px;
+  border-bottom: 1px solid var(--line);
+}
+
+.queue-header-copy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.queue-title {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.queue-subtitle {
+  color: var(--muted);
+  font-size: 9px;
+}
+
+.queue-actions {
+  display: flex;
+  gap: 5px;
+  margin-left: auto;
+}
+
+.queue-run-button {
+  min-height: 34px;
+  padding: 7px 13px;
+  font-size: 10px;
+  box-shadow: 0 7px 16px rgba(20, 125, 109, 0.13);
+}
+
+.queue-run-button.is-stop,
+.queue-run-button.is-stop:hover {
+  color: #ffffff;
+  background: var(--red);
+  border-color: var(--red);
+  box-shadow: 0 7px 16px rgba(187, 75, 66, 0.2);
+}
+
+.parameters-strip {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr) auto;
+  gap: 8px;
+  padding: 10px 15px;
+  background: #faf8f3;
+  border-bottom: 1px solid var(--line);
+}
+
+.parameter {
+  min-width: 0;
+}
+
+.parameter-label {
+  display: block;
+  margin-bottom: 3px;
+  color: var(--faint);
+  font-size: 8px;
+  font-weight: 700;
+}
+
+.parameter-value {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--ink-soft);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.parameter-value select,
+.parameter-value .parameter-number {
+  width: 100%;
+  min-width: 50px;
+  padding: 3px 19px 3px 5px;
+  color: var(--ink-soft);
+  font-size: 9px;
+  font-weight: 700;
+  appearance: none;
+  background: var(--surface)
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%2379827d' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")
+    no-repeat right 5px center;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+}
+
+.parameter-value .parameter-number {
+  padding-right: 5px;
+  background-image: none;
+  text-align: center;
+}
+
+.thread-load {
+  align-self: end;
+  padding: 4px 7px;
+  color: var(--amber);
+  font-size: 8px;
+  font-weight: 700;
+  white-space: nowrap;
+  background: var(--amber-soft);
+  border-radius: 5px;
+}
+
+.schedule-box {
+  margin: 10px 15px 0;
+  padding: 10px 11px;
+  background: linear-gradient(135deg, #f1f7f3, #fbf8f0);
+  border: 1px solid #dfe9e3;
+  border-radius: 11px;
+}
+
+.schedule-strip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 10px 15px 2px;
+  padding: 8px 9px;
+  background: #faf8f2;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+}
+
+.schedule-strip-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--ink-soft);
+  font-size: 9px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.schedule-strip-label .icon {
+  color: var(--teal);
+}
+
+.schedule-date,
+.schedule-time {
+  height: 27px;
+  min-width: 0;
+  padding: 3px 4px;
+  color: var(--ink-soft);
+  font-size: 9px;
+  font-variant-numeric: tabular-nums;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+
+.schedule-date {
+  width: 121px;
+}
+
+.schedule-time {
+  width: 83px;
+}
+
+.schedule-strip .schedule-countdown {
+  flex: 1;
+  min-width: 54px;
+  overflow: hidden;
+  color: var(--faint);
+  font-size: 8px;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.schedule-strip .switch {
+  flex: 0 0 auto;
+}
+
+.schedule-main {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.schedule-icon {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  flex: 0 0 auto;
+  place-items: center;
+  color: var(--teal);
+  background: var(--surface);
+  border: 1px solid #d8e8e1;
+  border-radius: 8px;
+}
+
+.schedule-copy {
+  min-width: 0;
+  flex: 1;
+}
+
+.schedule-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--ink);
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.schedule-countdown {
+  color: var(--teal-strong);
+  font-size: 9px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.schedule-expand {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  margin-top: 9px;
+  animation: panel 180ms ease-out both;
+}
+
+.schedule-expand input {
+  min-width: 0;
+  padding: 6px 8px;
+  color: var(--ink-soft);
+  font-size: 10px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 7px;
+}
+
+.group-list {
+  display: grid;
+  gap: 10px;
+  padding: 12px 15px 15px;
+  overflow: auto;
+}
+
+.group-card {
+  position: relative;
+  overflow: hidden;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition);
+}
+
+.group-card:hover {
+  border-color: #d1d7d0;
+  box-shadow: 0 5px 15px rgba(31, 42, 36, 0.045);
+}
+
+.group-card.is-new {
+  animation: new-group 1.1s ease both;
+}
+
+@keyframes new-group {
+  0%,
+  35% {
+    border-color: #8dcbbb;
+    box-shadow: 0 0 0 4px rgba(20, 125, 109, 0.09);
+  }
+}
+
+.group-card.is-success {
+  border-color: #cce3da;
+  background: #fbfdfb;
+}
+
+.group-card.is-single {
+  background: #fcfbf7;
+}
+
+.group-card.is-single .group-head {
+  padding-bottom: 8px;
+}
+
+.group-card.is-single .group-body {
+  display: none;
+}
+
+.group-card.is-collapsed .group-body {
+  display: none;
+}
+
+.group-card.is-collapsed .group-head {
+  padding-bottom: 11px;
+}
+
+.single-class {
+  display: inline-flex;
+  padding: 1px 5px;
+  color: var(--teal-strong);
+  font-size: 8px;
+  font-weight: 700;
+  vertical-align: 1px;
+  background: var(--teal-pale);
+  border-radius: 4px;
+}
+
+.single-task-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 12px 10px 50px;
+  padding-top: 8px;
+  color: var(--muted);
+  font-size: 8px;
+  border-top: 1px dashed #e8e3d9;
+}
+
+.single-task-time {
+  min-width: 0;
+  overflow: hidden;
+  flex: 1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.single-task-capacity,
+.single-task-attempts {
+  flex: 0 0 auto;
+  color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
+}
+
+.group-head {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 11px 12px;
+}
+
+.group-expand {
+  display: grid;
+  width: 22px;
+  height: 22px;
+  flex: 0 0 auto;
+  place-items: center;
+  color: var(--muted);
+  background: transparent;
+  border: 0;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.group-expand:hover {
+  color: var(--ink);
+  background: var(--surface-soft);
+}
+
+.group-expand .icon {
+  transition: transform var(--transition);
+}
+
+.group-card.is-collapsed .group-expand .icon {
+  transform: rotate(-90deg);
+}
+
+.group-symbol {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  flex: 0 0 auto;
+  place-items: center;
+  color: var(--teal-strong);
+  font-size: 10px;
+  font-weight: 800;
+  background: var(--teal-pale);
+  border: 1px solid #d3e9df;
+  border-radius: 8px;
+}
+
+.group-copy {
+  min-width: 0;
+  flex: 1;
+}
+
+.group-name {
+  overflow: hidden;
+  color: var(--ink);
+  font-size: 11px;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.group-meta {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 8px;
+}
+
+.group-actions {
+  display: flex;
+  gap: 2px;
+}
+
+.group-action {
+  display: grid;
+  width: 27px;
+  height: 27px;
+  place-items: center;
+  color: var(--muted);
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.group-action:hover {
+  color: var(--ink);
+  background: var(--surface-soft);
+}
+
+.group-body {
+  padding: 0 12px 11px;
+}
+
+.task-list {
+  display: grid;
+  gap: 6px;
+}
+
+.task {
+  display: grid;
+  grid-template-columns: 17px 23px minmax(0, 1fr) auto;
+  gap: 7px;
+  align-items: center;
+  padding: 8px;
+  background: #faf8f3;
+  border: 1px solid #e9e5dc;
+  border-radius: 9px;
+  cursor: grab;
+}
+
+.task:active {
+  cursor: grabbing;
+}
+
+.task.is-active {
+  background: var(--teal-pale);
+  border-color: #b9dccf;
+}
+
+.task.is-paused {
+  background: #fbf6ec;
+  border-color: #ecdfc5;
+}
+
+.task.is-full {
+  opacity: 0.72;
+}
+
+.task.is-dragging {
+  opacity: 0.45;
+}
+
+.task-priority {
+  color: var(--faint);
+  font-size: 8px;
+  font-weight: 800;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.task-state-icon {
+  display: grid;
+  width: 21px;
+  height: 21px;
+  place-items: center;
+  color: var(--muted);
+  background: #ece9e1;
+  border-radius: 6px;
+}
+
+.task.is-active .task-state-icon {
+  color: var(--teal);
+  background: #d3ebe2;
+}
+
+.task.is-paused .task-state-icon {
+  color: var(--amber);
+  background: var(--amber-soft);
+}
+
+.task-copy {
+  min-width: 0;
+}
+
+.task-name {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--ink-soft);
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.task-name span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.task-name .role {
+  flex: 0 0 auto;
+  padding: 1px 4px;
+  color: var(--teal-strong);
+  font-size: 7px;
+  background: #e3f2ec;
+  border-radius: 3px;
+}
+
+.task-meta {
+  margin-top: 1px;
+  overflow: hidden;
+  color: var(--faint);
+  font-size: 8px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.task-info {
+  text-align: right;
+}
+
+.task-attempt {
+  color: var(--muted);
+  font-size: 8px;
+  font-variant-numeric: tabular-nums;
+}
+
+.task-menu {
+  display: grid;
+  width: 24px;
+  height: 24px;
+  place-items: center;
+  color: var(--faint);
+  background: transparent;
+  border: 0;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.task-menu:hover {
+  color: var(--ink);
+  background: var(--surface);
+}
+
+.group-result {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 11px 12px;
+}
+
+.result-check {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  color: #ffffff;
+  background: var(--teal);
+  border-radius: 50%;
+}
+
+.result-copy {
+  min-width: 0;
+}
+
+.result-title {
+  color: var(--ink);
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.result-meta {
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 8px;
+}
+
+.empty-state {
+  display: grid;
+  min-height: 280px;
+  place-items: center;
+  padding: 30px;
+  text-align: center;
+}
+
+.empty-inner {
+  max-width: 300px;
+}
+
+.empty-mark {
+  display: grid;
+  width: 54px;
+  height: 54px;
+  margin: 0 auto 13px;
+  place-items: center;
+  color: var(--teal);
+  background: var(--teal-pale);
+  border: 1px dashed #b8d8cb;
+  border-radius: 17px;
+}
+
+.empty-title {
+  margin: 0;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.empty-copy {
+  margin: 6px 0 14px;
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.all-courses-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 16px;
+}
+
+.all-courses-card {
+  min-height: calc(100vh - 196px);
+  overflow: hidden;
+}
+
+.all-courses-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 15px;
+  border-bottom: 1px solid var(--line);
+}
+
+.load-progress {
+  display: flex;
+  min-width: 160px;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 9px;
+}
+
+.load-progress-bar {
+  width: 90px;
+  height: 4px;
+  overflow: hidden;
+  background: var(--line);
+  border-radius: 999px;
+}
+
+.load-progress-bar span {
+  display: block;
+  width: 0;
+  height: 100%;
+  background: var(--teal);
+  border-radius: inherit;
+  transition: width 240ms ease;
+}
+
+.basket-card {
+  display: flex;
+  min-height: calc(100vh - 196px);
+  flex-direction: column;
+  padding: 0;
+  overflow: hidden;
+}
+
+.basket-list {
+  display: grid;
+  gap: 7px;
+  padding: 12px;
+  overflow: auto;
+}
+
+.basket-item {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+  padding: 8px;
+  background: var(--surface-soft);
+  border: 1px solid var(--line);
+  border-radius: 9px;
+}
+
+.basket-code {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  color: var(--teal-strong);
+  font-size: 8px;
+  font-weight: 800;
+  background: var(--teal-pale);
+  border-radius: 7px;
+}
+
+.basket-copy {
+  min-width: 0;
+}
+
+.basket-name {
+  overflow: hidden;
+  color: var(--ink);
+  font-size: 9px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.basket-meta {
+  margin-top: 2px;
+  color: var(--faint);
+  font-size: 8px;
+}
+
+.basket-footer {
+  display: grid;
+  gap: 8px;
+  margin-top: auto;
+  padding: 12px;
+  border-top: 1px solid var(--line);
+}
+
+.basket-total {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--muted);
+  font-size: 9px;
+}
+
+.basket-total strong {
+  color: var(--ink);
+  font-size: 13px;
+}
+
+.selected-layout {
+  display: grid;
+  grid-template-columns: minmax(300px, 0.82fr) minmax(480px, 1.18fr);
+  gap: 16px;
+}
+
+.selected-list-card,
+.timetable-card {
+  min-height: calc(100vh - 196px);
+  overflow: hidden;
+}
+
+.selected-list-card {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.selected-layout .selected-table {
+  min-width: 480px;
+}
+
+.selected-layout .course-name {
+  max-width: 150px;
+}
+
+.drop-history {
+  margin-top: auto;
+  border-top: 1px solid var(--line);
+}
+
+.drop-history-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 14px;
+  color: var(--ink-soft);
+  font-size: 9px;
+  font-weight: 700;
+  cursor: pointer;
+  user-select: none;
+}
+
+.drop-history-head .icon {
+  margin-left: auto;
+  transition: transform var(--transition);
+}
+
+.drop-history.is-open .drop-history-head .icon {
+  transform: rotate(180deg);
+}
+
+.drop-history-body {
+  display: grid;
+  gap: 6px;
+  padding: 0 14px 12px;
+}
+
+.drop-record {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 8px;
+  color: var(--muted);
+  font-size: 8px;
+  background: var(--surface-soft);
+  border-radius: 7px;
+}
+
+.drop-record strong {
+  color: var(--ink-soft);
+  font-size: 9px;
+}
+
+.timetable-card {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.timetable-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 13px;
+  border-bottom: 1px solid var(--line);
+}
+
+.week-pill {
+  padding: 4px 7px;
+  color: var(--teal-strong);
+  font-size: 8px;
+  font-weight: 700;
+  background: var(--teal-pale);
+  border-radius: 5px;
+}
+
+.timetable-wrap {
+  min-width: 0;
+  overflow: auto;
+  padding: 12px 13px 14px;
+}
+
+.timetable {
+  display: grid;
+  min-width: 640px;
+  grid-template-columns: 36px repeat(7, minmax(72px, 1fr));
+  grid-template-rows: 32px repeat(12, minmax(42px, 1fr));
+  gap: 2px;
+}
+
+.timetable-head {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 700;
+  background: #faf8f3;
+  border-radius: 5px;
+}
+
+.timetable-corner {
+  color: var(--faint);
+  font-size: 8px;
+}
+
+.section-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  font-size: 8px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  background: #faf8f3;
+  border-radius: 5px;
+}
+
+.section-label span:last-child {
+  color: var(--faint);
+  font-size: 7px;
+  font-weight: 500;
+}
+
+.timetable-cell {
+  position: relative;
+  min-height: 42px;
+  border: 1px solid #ece8df;
+  border-radius: 5px;
+}
+
+.timetable-cell::after {
+  position: absolute;
+  inset: 50% 0 auto;
+  content: "";
+  border-top: 1px dashed rgba(213, 207, 194, 0.38);
+}
+
+.course-block {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  min-height: 0;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px 6px 5px;
+  overflow: hidden;
+  text-align: left;
+  background: var(--block-bg, #e6f1ed);
+  border: 1px solid var(--block-line, #c8ded5);
+  border-left: 3px solid var(--block-accent, #4b8f7c);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+
+.course-block:hover {
+  z-index: 3;
+  box-shadow: 0 6px 15px rgba(27, 41, 36, 0.1);
+  transform: translateY(-1px);
+}
+
+.course-block.is-conflict {
+  border-color: #dfaaa3;
+  border-left-color: var(--red);
+  box-shadow: inset 0 0 0 1px rgba(187, 75, 66, 0.08);
+}
+
+.course-block-name {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  overflow: hidden;
+  color: var(--ink);
+  font-size: 9px;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.course-block-name .icon {
+  width: 10px;
+  height: 10px;
+  flex: 0 0 auto;
+  color: var(--red);
+}
+
+.course-block-meta {
+  overflow: hidden;
+  color: var(--ink-soft);
+  font-size: 7px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  opacity: 0.76;
+}
+
+.unplaced-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 0 13px 13px;
+}
+
+.unplaced-item {
+  padding: 5px 8px;
+  color: var(--muted);
+  font-size: 8px;
+  background: var(--surface-soft);
+  border: 1px dashed var(--line-strong);
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.top-progress {
+  position: fixed;
+  top: 0;
+  left: 224px;
+  right: 0;
+  z-index: 80;
+  height: 2px;
+  overflow: hidden;
+  background: transparent;
+}
+
+.top-progress span {
+  display: block;
+  width: 0;
+  height: 100%;
+  background: var(--teal);
+  transition: width 220ms ease;
+}
+
+.info-bar {
+  position: fixed;
+  top: 84px;
+  left: 50%;
+  z-index: 90;
+  display: flex;
+  width: min(520px, calc(100vw - 48px));
+  align-items: center;
+  gap: 10px;
+  padding: 11px 12px;
+  color: var(--ink);
+  background: rgba(255, 253, 248, 0.97);
+  border: 1px solid #cfe4dc;
+  border-radius: 12px;
+  box-shadow: var(--shadow-md);
+  transform: translateX(-50%);
+  animation: info-in 220ms ease both;
+  backdrop-filter: blur(12px);
+}
+
+@keyframes info-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -8px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+.info-icon {
+  display: grid;
+  width: 29px;
+  height: 29px;
+  flex: 0 0 auto;
+  place-items: center;
+  color: #ffffff;
+  background: var(--teal);
+  border-radius: 8px;
+}
+
+.info-copy {
+  min-width: 0;
+  flex: 1;
+}
+
+.info-title {
+  color: var(--ink);
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.info-message {
+  margin-top: 1px;
+  color: var(--muted);
+  font-size: 9px;
+}
+
+.info-close {
+  display: grid;
+  width: 25px;
+  height: 25px;
+  place-items: center;
+  color: var(--muted);
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.info-close:hover {
+  background: var(--surface-soft);
+}
+
+.log-dock {
+  position: fixed;
+  right: 26px;
+  bottom: 18px;
+  left: 250px;
+  z-index: 70;
+  overflow: hidden;
+  background: rgba(255, 253, 248, 0.98);
+  border: 1px solid var(--line-strong);
+  border-radius: 14px;
+  box-shadow: var(--shadow-md);
+  transform: translateY(calc(100% - 46px));
+  transition: transform 240ms cubic-bezier(0.2, 0.75, 0.2, 1);
+  backdrop-filter: blur(14px);
+}
+
+.log-dock.is-open {
+  transform: translateY(0);
+}
+
+.log-handle {
+  display: flex;
+  height: 46px;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 13px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.log-handle-icon {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  color: var(--teal);
+  background: var(--teal-pale);
+  border-radius: 7px;
+}
+
+.log-handle-copy {
+  min-width: 0;
+}
+
+.log-handle-title {
+  color: var(--ink);
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.log-handle-meta {
+  color: var(--muted);
+  font-size: 8px;
+}
+
+.log-handle .log-latest {
+  min-width: 0;
+  max-width: 48%;
+  margin-left: auto;
+  overflow: hidden;
+  color: var(--faint);
+  font-size: 8px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.log-handle .icon-chevron {
+  transition: transform var(--transition);
+}
+
+.log-dock.is-open .log-handle .icon-chevron {
+  transform: rotate(180deg);
+}
+
+.log-body {
+  height: 315px;
+  border-top: 1px solid var(--line);
+}
+
+.log-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 13px;
+  background: #faf8f3;
+  border-bottom: 1px solid var(--line);
+}
+
+.log-filters {
+  display: flex;
+  min-width: 0;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.log-filters .select-compact {
+  height: 28px;
+  font-size: 9px;
+}
+
+.log-toolbar .spacer {
+  flex: 1;
+}
+
+.log-list {
+  height: calc(100% - 46px);
+  padding: 5px 0;
+  overflow: auto;
+  background: #fcfbf7;
+}
+
+.log-row {
+  display: grid;
+  grid-template-columns: 80px 68px minmax(0, 1fr);
+  gap: 10px;
+  padding: 7px 15px;
+  color: var(--ink-soft);
+  font-family: "Cascadia Mono", "Consolas", monospace;
+  font-size: 10px;
+  line-height: 1.5;
+  border-bottom: 1px solid rgba(227, 222, 210, 0.42);
+}
+
+.log-row:hover {
+  background: #f5f3ed;
+}
+
+.log-time {
+  color: var(--faint);
+  font-size: 9px;
+  font-variant-numeric: tabular-nums;
+}
+
+.log-level {
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.log-row.info .log-level {
+  color: var(--blue);
+}
+
+.log-row.success .log-level {
+  color: var(--teal);
+}
+
+.log-row.warn .log-level {
+  color: var(--amber);
+}
+
+.log-row.error .log-level {
+  color: var(--red);
+}
+
+.log-message {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.log-to-bottom {
+  position: absolute;
+  right: 19px;
+  bottom: 13px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 8px;
+  color: var(--teal-strong);
+  font-size: 8px;
+  font-weight: 700;
+  background: var(--surface);
+  border: 1px solid #cfe4dc;
+  border-radius: 6px;
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+}
+
+.detail-scrim,
+.modal-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 75;
+  background: rgba(19, 32, 26, 0.24);
+  backdrop-filter: blur(2px);
+  animation: fade-in 160ms ease both;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.detail-scrim {
+  background: rgba(37, 49, 43, 0.11);
+  backdrop-filter: blur(1px);
+}
+
+.detail-scrim + .detail-drawer {
+  box-shadow: -12px 0 36px rgba(18, 33, 26, 0.08);
+}
+
+.detail-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 76;
+  display: flex;
+  width: min(400px, calc(100vw - 56px));
+  height: 100vh;
+  flex-direction: column;
+  background: var(--surface);
+  border-left: 1px solid var(--line);
+  box-shadow: -18px 0 45px rgba(18, 33, 26, 0.12);
+  transform: translateX(100%);
+  transition: transform 260ms cubic-bezier(0.2, 0.75, 0.2, 1);
+}
+
+.detail-drawer.is-open {
+  transform: translateX(0);
+}
+
+.drawer-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 18px 18px 15px;
+  border-bottom: 1px solid var(--line);
+}
+
+.drawer-title {
+  min-width: 0;
+  flex: 1;
+}
+
+.drawer-kicker {
+  margin-bottom: 5px;
+  color: var(--teal);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.drawer-title h2 {
+  margin: 0;
+  color: var(--ink);
+  font-family: var(--font-cn);
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+}
+
+.drawer-title p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 9px;
+}
+
+.drawer-body {
+  flex: 1;
+  padding: 16px 18px 24px;
+  overflow: auto;
+}
+
+.drawer-status-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 17px;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 13px 18px;
+}
+
+.detail-field {
+  min-width: 0;
+}
+
+.detail-field.wide {
+  grid-column: 1 / -1;
+}
+
+.detail-label {
+  margin-bottom: 4px;
+  color: var(--faint);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.detail-value {
+  color: var(--ink-soft);
+  font-size: 10px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.detail-section {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+
+.detail-section-title {
+  margin: 0 0 9px;
+  color: var(--ink);
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.mini-schedule {
+  display: grid;
+  gap: 6px;
+}
+
+.mini-schedule-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 7px 8px;
+  color: var(--muted);
+  font-size: 9px;
+  background: var(--surface-soft);
+  border-radius: 7px;
+}
+
+.mini-schedule-row .day {
+  flex: 0 0 auto;
+  color: var(--teal-strong);
+  font-weight: 700;
+}
+
+.conflict-box {
+  display: flex;
+  gap: 8px;
+  padding: 9px;
+  color: var(--red);
+  font-size: 9px;
+  background: var(--red-soft);
+  border: 1px solid #f0d2ce;
+  border-radius: 8px;
+}
+
+.conflict-box .icon {
+  flex: 0 0 auto;
+}
+
+.drawer-footer {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  padding: 13px 18px;
+  border-top: 1px solid var(--line);
+}
+
+.drawer-footer.is-readonly {
+  display: block;
+}
+
+.drawer-footer.is-readonly > .button.primary {
+  display: none;
+}
+
+.drawer-footer.is-readonly > .button:last-child {
+  width: 100%;
+}
+
+.modal-scrim {
+  z-index: 110;
+}
+
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 111;
+  width: min(420px, calc(100vw - 40px));
+  overflow: hidden;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 17px;
+  box-shadow: var(--shadow-lg);
+  transform: translate(-50%, -50%);
+  animation: modal-in 200ms ease both;
+}
+
+@keyframes modal-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, calc(-50% + 8px)) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+.modal-head {
+  display: flex;
+  gap: 11px;
+  padding: 18px 18px 12px;
+}
+
+.modal-mark {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+  place-items: center;
+  color: var(--teal);
+  background: var(--teal-pale);
+  border-radius: 9px;
+}
+
+.modal-copy h3 {
+  margin: 1px 0 3px;
+  color: var(--ink);
+  font-size: 13px;
+}
+
+.modal-copy p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+.modal-body {
+  padding: 3px 18px 16px;
+}
+
+.modal-note {
+  padding: 9px 10px;
+  color: var(--ink-soft);
+  font-size: 9px;
+  background: var(--surface-soft);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.modal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 7px;
+  padding: 12px 18px;
+  background: #faf8f3;
+  border-top: 1px solid var(--line);
+}
+
+.menu-popover {
+  position: fixed;
+  z-index: 120;
+  min-width: 164px;
+  overflow: hidden;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  box-shadow: var(--shadow-md);
+  animation: panel 130ms ease both;
+}
+
+.menu-item {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  color: var(--ink-soft);
+  font-size: 9px;
+  text-align: left;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+.menu-item:hover {
+  background: var(--surface-soft);
+}
+
+.menu-item.danger {
+  color: var(--red);
+}
+
+.menu-separator {
+  height: 1px;
+  margin: 4px 0;
+  background: var(--line);
+}
+
+.column-menu {
+  width: 200px;
+  padding: 6px;
+}
+
+.column-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 7px;
+  color: var(--ink-soft);
+  font-size: 9px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.column-option:hover {
+  background: var(--surface-soft);
+}
+
+.login-page {
+  min-height: 100vh;
+  overflow: auto;
+  background:
+    radial-gradient(circle at 17% 10%, rgba(255, 255, 255, 0.88), transparent 32rem),
+    radial-gradient(circle at 83% 100%, rgba(199, 232, 220, 0.62), transparent 29rem),
+    var(--bg);
+}
+
+.login-page::before {
+  position: fixed;
+  inset: 0;
+  content: "";
+  background-image: radial-gradient(rgba(29, 47, 39, 0.08) 0.7px, transparent 0.7px);
+  background-size: 18px 18px;
+  opacity: 0.23;
+  pointer-events: none;
+}
+
+.login-brandbar {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  max-width: 1120px;
+  align-items: center;
+  gap: 11px;
+  margin: 0 auto;
+  padding: 22px 24px 14px;
+}
+
+.login-brandbar .brand-mark {
+  width: 34px;
+  height: 34px;
+  color: var(--nav);
+  background: var(--nav);
+  border-radius: 10px;
+}
+
+.login-brandbar .brand-mark .icon {
+  color: #d9eee6;
+}
+
+.login-brandbar .brand-mark::after {
+  border-color: rgba(217, 238, 230, 0.25);
+}
+
+.login-brandbar .brand-name {
+  color: var(--ink);
+  font-size: 14px;
+}
+
+.login-brandbar .brand-meta {
+  color: var(--muted);
+  font-size: 8px;
+}
+
+.login-brandbar .login-secure {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 9px;
+}
+
+.login-stage {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  min-height: calc(100vh - 72px);
+  place-items: center;
+  padding: 8px 24px 26px;
+}
+
+.login-card {
+  display: grid;
+  width: min(1020px, calc(100vw - 48px));
+  min-height: 600px;
+  grid-template-columns: minmax(340px, 0.86fr) minmax(450px, 1.14fr);
+  overflow: hidden;
+  background: var(--surface);
+  border: 1px solid rgba(213, 207, 194, 0.9);
+  border-radius: 26px;
+  box-shadow: 0 35px 90px rgba(26, 43, 35, 0.18), 0 8px 24px rgba(26, 43, 35, 0.06);
+}
+
+.login-visual {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 34px;
+  color: #eaf6f0;
+  background:
+    radial-gradient(circle at 8% 2%, rgba(78, 154, 130, 0.32), transparent 23rem),
+    linear-gradient(155deg, #18392e 0%, #0f2921 100%);
+}
+
+.login-visual::before,
+.login-visual::after {
+  position: absolute;
+  content: "";
+  border: 1px solid rgba(208, 238, 227, 0.08);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.login-visual::before {
+  top: 175px;
+  right: -190px;
+  width: 430px;
+  height: 430px;
+  box-shadow: 0 0 0 46px rgba(208, 238, 227, 0.018), 0 0 0 96px rgba(208, 238, 227, 0.014);
+}
+
+.login-visual::after {
+  bottom: -140px;
+  left: -155px;
+  width: 320px;
+  height: 320px;
+}
+
+.visual-kicker {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #9ed9c6;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.visual-kicker::before {
+  width: 16px;
+  height: 1px;
+  content: "";
+  background: #9ed9c6;
+}
+
+.visual-title {
+  margin: 16px 0 0;
+  color: #f7fcf9;
+  font-family: var(--font-cn);
+  font-size: clamp(28px, 2.8vw, 38px);
+  font-weight: 700;
+  letter-spacing: -0.045em;
+  line-height: 1.2;
+}
+
+.visual-title span {
+  color: #9ed9c6;
+}
+
+.visual-copy {
+  max-width: 330px;
+  margin: 12px 0 0;
+  color: rgba(229, 245, 238, 0.67);
+  font-size: 11px;
+  line-height: 1.8;
+}
+
+.visual-calendar {
+  position: relative;
+  z-index: 1;
+  margin-top: 42px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.065);
+  border: 1px solid rgba(218, 242, 231, 0.1);
+  border-radius: 16px;
+  backdrop-filter: blur(4px);
+}
+
+.visual-calendar-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 9px;
+  color: rgba(234, 248, 242, 0.66);
+  font-size: 8px;
+  font-weight: 700;
+}
+
+.visual-calendar-head span:last-child {
+  margin-left: auto;
+  color: rgba(234, 248, 242, 0.35);
+}
+
+.visual-grid {
+  display: grid;
+  grid-template-columns: 24px repeat(5, 1fr);
+  grid-template-rows: repeat(5, 31px);
+  gap: 3px;
+}
+
+.visual-day {
+  display: grid;
+  place-items: center;
+  color: rgba(222, 241, 233, 0.33);
+  font-size: 7px;
+}
+
+.visual-cell {
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(229, 247, 239, 0.055);
+  border-radius: 4px;
+}
+
+.visual-course {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #dff3eb;
+  font-size: 7px;
+  font-weight: 600;
+  background: rgba(113, 192, 163, 0.17);
+  border: 1px solid rgba(145, 214, 188, 0.17);
+  border-left: 2px solid #87cfb6;
+  border-radius: 4px;
+}
+
+.visual-side-card {
+  position: absolute;
+  right: 25px;
+  bottom: 28px;
+  z-index: 2;
+  width: 208px;
+  padding: 11px;
+  background: rgba(246, 252, 249, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 12px;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.22);
+  transform: rotate(-2deg);
+}
+
+.visual-side-card-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--ink);
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.visual-side-card-head .status-dot {
+  width: 6px;
+  height: 6px;
+  background: #26a383;
+  border-radius: 50%;
+}
+
+.visual-side-card-head span:last-child {
+  margin-left: auto;
+  color: var(--teal-strong);
+  font-size: 7px;
+}
+
+.visual-mini-task {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 7px;
+  padding: 5px 6px;
+  color: var(--ink-soft);
+  font-size: 7px;
+  background: #f4f8f5;
+  border-radius: 5px;
+}
+
+.visual-mini-task .bar {
+  width: 3px;
+  height: 14px;
+  background: var(--teal);
+  border-radius: 2px;
+}
+
+.visual-mini-task span:nth-child(2) {
+  flex: 1;
+  font-weight: 600;
+}
+
+.visual-mini-task span:last-child {
+  color: var(--faint);
+}
+
+.login-panel {
+  display: flex;
+  flex-direction: column;
+  padding: 37px 48px 28px;
+  background: var(--surface);
+}
+
+.login-panel-head {
+  margin-bottom: 23px;
+}
+
+.login-panel-kicker {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 9px;
+  color: var(--teal);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.login-panel-kicker::before {
+  width: 7px;
+  height: 7px;
+  content: "";
+  background: var(--teal);
+  border-radius: 2px;
+  transform: rotate(45deg);
+}
+
+.login-panel h1 {
+  margin: 0;
+  color: var(--ink);
+  font-family: var(--font-cn);
+  font-size: 27px;
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 1.25;
+}
+
+.login-panel-head p {
+  margin: 7px 0 0;
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.login-form {
+  display: grid;
+  gap: 13px;
+}
+
+.field {
+  display: grid;
+  gap: 6px;
+}
+
+.field-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.field-label {
+  color: var(--ink-soft);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.field-hint {
+  color: var(--faint);
+  font-size: 8px;
+}
+
+.input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-wrap > .icon {
+  position: absolute;
+  left: 12px;
+  z-index: 1;
+  color: var(--faint);
+  pointer-events: none;
+}
+
+.input {
+  width: 100%;
+  height: 42px;
+  padding: 8px 12px;
+  color: var(--ink);
+  font-size: 11px;
+  background: var(--surface-soft);
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  transition: border-color var(--transition), background var(--transition), box-shadow var(--transition);
+}
+
+.input.with-icon {
+  padding-left: 37px;
+}
+
+.input.with-action {
+  padding-right: 40px;
+}
+
+.input::placeholder {
+  color: var(--faint);
+}
+
+.input:focus {
+  outline: 0;
+  background: #ffffff;
+  border-color: #90c8b7;
+  box-shadow: 0 0 0 3px rgba(20, 125, 109, 0.08);
+}
+
+.select-input {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2379827d' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+}
+
+.input-action {
+  position: absolute;
+  right: 5px;
+  display: grid;
+  width: 31px;
+  height: 31px;
+  place-items: center;
+  color: var(--muted);
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.input-action:hover {
+  color: var(--ink);
+  background: var(--surface-soft);
+}
+
+.account-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 38px;
+  gap: 7px;
+}
+
+.add-account {
+  display: grid;
+  height: 42px;
+  place-items: center;
+  color: var(--teal);
+  background: var(--teal-pale);
+  border: 1px solid #cfe7dd;
+  border-radius: 9px;
+  cursor: pointer;
+}
+
+.add-account:hover {
+  background: #e4f4ed;
+}
+
+.captcha-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 128px;
+  gap: 8px;
+}
+
+.captcha-box {
+  position: relative;
+  display: flex;
+  height: 42px;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  color: #2b5345;
+  font-family: "Cascadia Mono", "Consolas", monospace;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: 5px;
+  text-decoration: line-through;
+  background:
+    repeating-linear-gradient(112deg, transparent 0 9px, rgba(33, 95, 75, 0.09) 9px 10px),
+    radial-gradient(circle at 20% 40%, rgba(232, 194, 114, 0.38), transparent 8px),
+    radial-gradient(circle at 81% 67%, rgba(97, 160, 138, 0.28), transparent 9px),
+    #f3f4e9;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.captcha-box::before {
+  position: absolute;
+  width: 80%;
+  height: 20px;
+  content: "";
+  border-top: 1px solid rgba(36, 103, 80, 0.3);
+  border-radius: 50%;
+  transform: rotate(-6deg);
+}
+
+.captcha-box span {
+  position: relative;
+  z-index: 1;
+  transform: skewX(-8deg);
+}
+
+.captcha-box:hover {
+  border-color: #9ccdbf;
+}
+
+.form-options {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 1px;
+}
+
+.check-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 9px;
+  cursor: pointer;
+}
+
+.login-button {
+  position: relative;
+  display: flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 5px;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 800;
+  background: var(--teal);
+  border: 1px solid var(--teal);
+  border-radius: 9px;
+  box-shadow: 0 10px 22px rgba(20, 125, 109, 0.2);
+  cursor: pointer;
+  transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
+}
+
+.login-button:hover {
+  background: var(--teal-strong);
+  box-shadow: 0 12px 25px rgba(20, 125, 109, 0.25);
+}
+
+.login-button:active {
+  transform: translateY(1px);
+}
+
+.login-button:disabled {
+  color: rgba(255, 255, 255, 0.72);
+  cursor: wait;
+  background: #5b9f90;
+  border-color: #5b9f90;
+}
+
+.login-button .spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 700ms linear infinite;
+}
+
+.login-info {
+  display: flex;
+  gap: 8px;
+  padding: 9px 10px;
+  color: var(--red);
+  font-size: 9px;
+  background: var(--red-soft);
+  border: 1px solid #f0d1cc;
+  border-radius: 8px;
+  animation: panel 160ms ease both;
+}
+
+.login-info .icon {
+  width: 14px;
+  height: 14px;
+  flex: 0 0 auto;
+}
+
+.login-panel-footer {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: auto;
+  padding-top: 19px;
+  color: var(--faint);
+  font-size: 8px;
+  border-top: 1px solid var(--line);
+}
+
+.login-panel-footer span:nth-child(2) {
+  margin-left: auto;
+}
+
+.login-demo-note {
+  color: var(--muted);
+  font-size: 8px;
+}
+
+.login-demo-note strong {
+  color: var(--teal-strong);
+}
+
+.toast-region {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 200;
+  display: grid;
+  gap: 8px;
+}
+
+.toast {
+  display: flex;
+  width: 300px;
+  gap: 9px;
+  padding: 10px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  box-shadow: var(--shadow-md);
+  animation: toast-in 200ms ease both;
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateX(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@media (max-width: 1280px) {
+  .app-shell {
+    grid-template-columns: 80px minmax(0, 1fr);
+  }
+
+  .sidebar {
+    padding-right: 10px;
+    padding-left: 10px;
+  }
+
+  .brand {
+    justify-content: center;
+    padding-right: 0;
+    padding-left: 0;
+  }
+
+  .brand-text,
+  .nav-label,
+  .nav-link span:not(.nav-count),
+  .nav-count,
+  .batch-note {
+    display: none;
+  }
+
+  .nav-link {
+    justify-content: center;
+    padding: 12px;
+  }
+
+  .nav-link::before {
+    left: 3px;
+  }
+
+  .sidebar-footer {
+    padding-right: 0;
+    padding-left: 0;
+  }
+
+  .top-progress {
+    left: 80px;
+  }
+
+  .log-dock {
+    left: 98px;
+  }
+
+  .workspace-grid {
+    grid-template-columns: minmax(0, 1.38fr) minmax(310px, 0.92fr);
+  }
+
+  .all-courses-layout {
+    grid-template-columns: minmax(0, 1fr) 275px;
+  }
+}
+
+@media (max-width: 1120px) {
+  .topbar {
+    flex-wrap: wrap;
+    gap: 8px 12px;
+    padding: 9px 18px;
+  }
+
+  .topbar-left {
+    min-height: 34px;
+  }
+
+  .topbar-right {
+    gap: 5px;
+  }
+
+  .batch-select {
+    max-width: 170px;
+  }
+
+  .main-content {
+    padding-right: 18px;
+    padding-left: 18px;
+  }
+
+  .workspace-grid {
+    grid-template-columns: minmax(0, 1.2fr) minmax(300px, 0.9fr);
+  }
+
+  .parameters-strip {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .thread-load {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+
+  .all-courses-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .basket-card {
+    min-height: 0;
+  }
+
+  .basket-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .selected-layout {
+    grid-template-columns: minmax(280px, 0.8fr) minmax(440px, 1.2fr);
+  }
+}
+
+@media (max-width: 960px) {
+  .workspace-grid,
+  .selected-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .queue-panel,
+  .selected-list-card,
+  .timetable-card {
+    min-height: 420px;
+  }
+
+  .course-browser {
+    min-height: 540px;
+  }
+
+  .detail-drawer {
+    top: 0;
+  }
+
+  .page-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .page-actions {
+    justify-content: flex-start;
+  }
+
+  .login-card {
+    grid-template-columns: minmax(300px, 0.76fr) minmax(420px, 1.24fr);
+  }
+
+  .login-panel {
+    padding-right: 34px;
+    padding-left: 34px;
+  }
+}
+
+@media (max-width: 760px) {
+  .app-shell {
+    display: block;
+  }
+
+  .sidebar {
+    position: fixed;
+    top: auto;
+    right: 12px;
+    bottom: 12px;
+    left: 12px;
+    z-index: 50;
+    width: auto;
+    height: 58px;
+    flex-direction: row;
+    align-items: center;
+    padding: 7px;
+    border-radius: 15px;
+    box-shadow: var(--shadow-lg);
+  }
+
+  .brand,
+  .sidebar-footer,
+  .nav-label {
+    display: none;
+  }
+
+  .nav-section {
+    width: 100%;
+    margin: 0;
+  }
+
+  .nav-list {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .nav-link {
+    justify-content: center;
+  }
+
+  .nav-link::before {
+    top: 0;
+    left: 50%;
+    width: 16px;
+    height: 2px;
+    transform: translate(-50%, -7px);
+  }
+
+  .nav-link.active::before {
+    transform: translate(-50%, 0);
+  }
+
+  .topbar {
+    padding-right: 14px;
+    padding-left: 14px;
+  }
+
+  .batch-select-wrap,
+  .user-meta,
+  .page-breadcrumb .slash,
+  .page-breadcrumb .page-current {
+    display: none;
+  }
+
+  .user-chip {
+    padding-left: 7px;
+  }
+
+  .main-content {
+    padding: 14px 12px 86px;
+  }
+
+  .page-title {
+    font-size: 21px;
+  }
+
+  .top-progress {
+    left: 0;
+  }
+
+  .log-dock {
+    right: 12px;
+    bottom: 80px;
+    left: 12px;
+  }
+
+  .basket-list {
+    grid-template-columns: 1fr;
+  }
+
+  .login-card {
+    grid-template-columns: 1fr;
+    min-height: 0;
+  }
+
+  .login-visual {
+    display: none;
+  }
+
+  .login-panel {
+    padding: 30px 24px 24px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+</style>
+</head>
+<body>
+<div class="login-overlay" id="loginOverlay">
+<main class="login-stage">
+      <section class="login-card" aria-label="登录抢课助手">
+        <div class="login-visual" aria-hidden="true">
+          <div class="visual-kicker">LESS WAITING, MORE CONTROL</div>
+          <h1 class="visual-title">把抢课这件事<br />做得更<span>从容</span>。</h1>
+          <p class="visual-copy">
+            先看清每一个教学班，再安排首选与备选。定时、队列和请求状态都在同一处，不用反复切换页面。
+          </p>
+
+          <div class="visual-calendar">
+            <div class="visual-calendar-head">
+              <svg class="icon icon-sm" viewBox="0 0 24 24">
+                <path d="M5 6.5h14v12H5zM8 4v5M16 4v5M5 10h14" />
+              </svg>
+              <span>WEEKLY OVERVIEW</span>
+              <span>第 8 周</span>
+            </div>
+            <div class="visual-grid">
+              <div class="visual-day">08</div>
+              <div class="visual-day">一</div>
+              <div class="visual-day">二</div>
+              <div class="visual-day">三</div>
+              <div class="visual-day">四</div>
+              <div class="visual-day">五</div>
+              <div class="visual-day">1</div>
+              <div class="visual-course">A</div>
+              <div class="visual-cell"></div>
+              <div class="visual-cell"></div>
+              <div class="visual-cell"></div>
+              <div class="visual-course">E</div>
+              <div class="visual-day">3</div>
+              <div class="visual-course">B</div>
+              <div class="visual-course" style="grid-column: span 2">C</div>
+              <div class="visual-cell"></div>
+              <div class="visual-cell"></div>
+              <div class="visual-day">5</div>
+              <div class="visual-cell"></div>
+              <div class="visual-course">D</div>
+              <div class="visual-cell"></div>
+              <div class="visual-cell"></div>
+              <div class="visual-day">7</div>
+              <div class="visual-cell"></div>
+              <div class="visual-cell"></div>
+              <div class="visual-cell"></div>
+              <div class="visual-course">F</div>
+              <div class="visual-day">9</div>
+              <div class="visual-cell"></div>
+              <div class="visual-cell"></div>
+              <div class="visual-cell"></div>
+              <div class="visual-cell"></div>
+              <div class="visual-cell"></div>
+            </div>
+          </div>
+
+          <div class="visual-side-card">
+            <div class="visual-side-card-head">
+              <span class="status-dot"></span>
+              <span>课程组 A</span>
+              <span>运行中</span>
+            </div>
+            <div class="visual-mini-task"><span class="bar"></span><span>01 班 · 首选</span><span>48 次</span></div>
+            <div class="visual-mini-task"><span class="bar" style="background: #a5afaa"></span><span>02 班 · 备选</span><span>待命</span></div>
+          </div>
+        </div>
+
+        <div class="login-panel">
+          <div class="login-panel-head">
+            <div class="login-panel-kicker">SIGN IN TO CONTINUE</div>
+            <h1>登录抢课助手</h1>
+            <p>使用兰州理工大学选课系统账号登录。</p>
+          </div>
+
+          <form class="login-form" id="login-form" novalidate>
+            <div class="field">
+              <div class="field-label-row">
+                <label class="field-label" for="account-select">学号</label>
+                <span class="field-hint">最近使用优先</span>
+              </div>
+              <div class="account-row">
+                <div class="input-wrap">
+                  <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
+                    <circle cx="12" cy="8.5" r="3" />
+                    <path d="M6.5 19c.6-3 2.5-4.5 5.5-4.5s4.9 1.5 5.5 4.5" />
+                  </svg>
+                  <select class="input select-input with-icon" id="account-select" aria-label="选择已保存账号">
+                    <option value="2024********">2024******** · 最近使用</option>
+                    <option value="2023********">2023********</option>
+                    <option value="__new__">＋ 新增账号</option>
+                  </select>
+                </div>
+                <button class="add-account" type="button" title="新增账号" data-action="new-account">
+                  <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M12 5v14M5 12h14" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="field" id="new-username-field" hidden>
+              <label class="field-label" for="new-username">新学号</label>
+              <div class="input-wrap">
+                <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
+                  <circle cx="12" cy="8.5" r="3" />
+                  <path d="M6.5 19c.6-3 2.5-4.5 5.5-4.5s4.9 1.5 5.5 4.5" />
+                </svg>
+                <input class="input with-icon" id="new-username" type="text" placeholder="输入学号" inputmode="numeric" autocomplete="username" />
+              </div>
+            </div>
+
+            <div class="field">
+              <div class="field-label-row">
+                <label class="field-label" for="password">密码</label>
+                <span class="field-hint">明文保存在本机 accounts.json</span>
+              </div>
+              <div class="input-wrap">
+                <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
+                  <rect x="5" y="10" width="14" height="10" rx="2" />
+                  <path d="M8 10V7a4 4 0 0 1 8 0v3" />
+                </svg>
+                <input class="input with-icon with-action" id="password" type="password" placeholder="输入密码" autocomplete="current-password" />
+                <button class="input-action" type="button" data-action="toggle-password" aria-label="显示密码">
+                  <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M3.5 12s3.1-5 8.5-5 8.5 5 8.5 5-3.1 5-8.5 5-8.5-5-8.5-5Z" />
+                    <circle cx="12" cy="12" r="2.3" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="field">
+              <div class="field-label-row">
+                <label class="field-label" for="captcha">验证码</label>
+                <span class="field-hint">点击右侧图片刷新</span>
+              </div>
+              <div class="captcha-row">
+                <div class="input-wrap">
+                  <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M5 5h14v14H5z" />
+                    <path d="M9 9h6v6H9z" />
+                  </svg>
+                  <input class="input with-icon" id="captcha" type="text" placeholder="输入验证码" autocomplete="off" maxlength="8" />
+                </div>
+                <button class="captcha-box" type="button" data-action="refresh-captcha" aria-label="刷新验证码">
+                  <span>7 A K 9</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="form-options">
+              <label class="check-label">
+                <input class="checkbox" id="remember-password" type="checkbox" checked />
+                记住密码
+              </label>
+              <span style="flex: 1"></span>
+              <span class="field-hint">不迁移旧配置</span>
+            </div>
+
+            <div class="login-info" id="login-error" role="alert" hidden>
+              <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 4 3.7 19h16.6L12 4Z" />
+                <path d="M12 9v4M12 16.5v.1" />
+              </svg>
+              <span id="login-error-text">请输入密码和验证码。</span>
+            </div>
+
+            <button class="login-button" id="login-button" type="submit">
+              <span id="login-button-label">进入工作台</span>
+              <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="m9 6 6 6-6 6" />
+              </svg>
+            </button>
+          </form>
+
+          <div class="login-panel-footer">
+            <span>界面原型 · 演示模式</span>
+            <span>LUTHelper</span>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    
+</div>
+<div class="app-shell">
+      <aside class="sidebar" aria-label="主导航">
+        <div class="brand">
+          <div class="brand-mark" aria-hidden="true">
+            <svg class="icon" viewBox="0 0 24 24">
+              <path d="M4 6.5 12 3l8 3.5-8 3.5-8-3.5Z" />
+              <path d="M6.5 8.5v5.2c0 1.8 2.5 3.3 5.5 3.3s5.5-1.5 5.5-3.3V8.5" />
+              <path d="M20 7v6" />
+            </svg>
+          </div>
+          <div class="brand-text">
+            <span class="brand-name">抢课助手</span>
+            <span class="brand-meta">LUT HELPER</span>
+          </div>
+        </div>
+
+        <div class="nav-section">
+          <div class="nav-label">工作空间</div>
+          <ul class="nav-list">
+            <li>
+              <button class="nav-link active" type="button" data-page="courses" aria-current="page">
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M4 5.5h16v13H4z" />
+                  <path d="M8 5.5v13M4 10h16M4 14.5h16" />
+                </svg>
+                <span>课程</span>
+                <span class="nav-count">3</span>
+              </button>
+            </li>
+            <li>
+              <button class="nav-link" type="button" data-page="all-courses">
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <circle cx="11" cy="11" r="6.5" />
+                  <path d="m16 16 4 4M8 11h6M11 8v6" />
+                </svg>
+                <span>全校课程</span>
+              </button>
+            </li>
+            <li>
+              <button class="nav-link" type="button" data-page="selected">
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M4 5.5h16v14H4z" />
+                  <path d="M8 3v5M16 3v5M4 9h16" />
+                  <path d="m9 14 2 2 4-4" />
+                </svg>
+                <span>已选课程</span>
+              </button>
+            </li>
+          </ul>
+        </div>
+
+        <div class="sidebar-footer">
+          <div class="batch-note">
+            <div class="batch-note-label">CURRENT ROUND</div>
+            <div class="batch-note-title">
+              <span class="batch-note-dot" aria-hidden="true"></span>
+              <span data-session="batch">2026 年秋季学期正选</span>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <main class="shell-main">
+        <header class="topbar">
+          <div class="topbar-left">
+            <div>
+              <div class="eyebrow">LUT HELPER</div>
+              <div class="page-breadcrumb">
+                <span>工作空间</span>
+                <span class="slash" aria-hidden="true">/</span>
+                <span class="page-current" data-breadcrumb>课程</span>
+              </div>
+            </div>
+            <span class="session-pill">
+              <span class="dot" aria-hidden="true"></span>
+              <span data-session="online">在线</span>
+            </span>
+          </div>
+
+          <div class="topbar-right">
+            <div class="batch-select-wrap">
+              <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M5 6.5h14v12H5z" />
+                <path d="M8 4v5M16 4v5M5 10h14" />
+              </svg>
+              <select class="batch-select" aria-label="切换选课批次" data-batch-select></select>
+            </div>
+            <button class="icon-button" type="button" data-action="mute" aria-label="静音提示音" aria-pressed="false">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M5 10v4h4l5 4V6l-5 4H5Z" />
+                <path d="M17 9.5a4 4 0 0 1 0 5" />
+              </svg>
+            </button>
+            <button class="icon-button" type="button" data-action="help" aria-label="帮助">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="12" r="8.5" />
+                <path d="M9.8 9a2.3 2.3 0 1 1 3.2 2.1c-.8.4-1 .9-1 1.8M12 16.4v.1" />
+              </svg>
+            </button>
+            <div class="user-chip" title="示例同学 · 2024********">
+              <div class="user-copy">
+                <span class="user-name" data-session="name">示例同学</span>
+                <span class="user-meta" data-session="college">计算机与人工智能学院</span>
+              </div>
+              <div class="avatar" aria-hidden="true">示</div>
+            </div>
+            <button class="icon-button" type="button" data-action="logout" aria-label="退出登录">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M10 5H6v14h4M14 8l4 4-4 4M9 12h9" />
+              </svg>
+            </button>
+          </div>
+        </header>
+
+        <div class="top-progress" aria-hidden="true"><span data-top-progress></span></div>
+
+        <div class="main-content">
+          <section class="page active" data-page-panel="courses" aria-label="课程工作台">
+            <div class="page-heading">
+              <div class="heading-copy">
+                <div class="heading-kicker">COURSE WORKSPACE</div>
+                <h1 class="page-title">把查课和抢课放在同一张桌面</h1>
+                <p class="page-subtitle">先选教学班，再编排首选与备选；所有请求状态集中在一处。</p>
+              </div>
+              <div class="page-actions">
+                <button class="button" type="button" data-action="refresh-courses">
+                  <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M20 7v5h-5M4 17v-5h5" />
+                    <path d="M6.5 8.2A7 7 0 0 1 18.8 11M17.5 15.8A7 7 0 0 1 5.2 13" />
+                  </svg>
+                  刷新课程
+                </button>
+              </div>
+            </div>
+
+            <div class="workspace-grid">
+              <section class="card course-browser" aria-label="课程检索">
+                <div class="card-header">
+                  <div class="card-title-wrap">
+                    <div class="card-title">课程检索</div>
+                    <div class="card-subtitle" data-course-summary>当前轮次 · 6 个教学班</div>
+                  </div>
+                  <div class="card-tools">
+                    <button class="icon-button" type="button" data-action="column-menu" aria-label="配置课程列">
+                      <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M5 5h4v14H5zM10.5 5h3v14h-3zM15 5h4v14h-4z" />
+                      </svg>
+                    </button>
+                    <button class="icon-button" type="button" data-action="toggle-filters" aria-label="展开筛选" aria-expanded="false">
+                      <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M4 6h16M7 12h10M10 18h4" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="browser-toolbar">
+                  <div class="type-tabs" role="tablist" aria-label="课程类型">
+                    <button class="type-tab active" type="button" role="tab" aria-selected="true">系统推荐</button>
+                    <button class="type-tab" type="button" role="tab" aria-selected="false">方案内</button>
+                    <button class="type-tab" type="button" role="tab" aria-selected="false">体育</button>
+                    <button class="type-tab" type="button" role="tab" aria-selected="false">公选</button>
+                  </div>
+                  <span class="toolbar-divider" aria-hidden="true"></span>
+                  <select class="select-compact" aria-label="校区筛选" data-campus-filter>
+                    <option>彭家坪校区</option>
+                    <option>兰工坪校区</option>
+                    <option>网上学习</option>
+                  </select>
+                  <div class="search-field">
+                    <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
+                      <circle cx="11" cy="11" r="6.5" />
+                      <path d="m16 16 4 4" />
+                    </svg>
+                    <input class="search-input" type="search" placeholder="搜索课程名 / 教师" aria-label="搜索课程" data-course-search />
+                    <button class="search-clear" type="button" data-action="clear-search" aria-label="清空搜索" hidden>
+                      <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="m7 7 10 10M17 7 7 17" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="filter-panel" data-filter-panel hidden>
+                  <label class="filter-group">
+                    <button class="switch" type="button" role="switch" aria-checked="false" data-filter="available"></button>
+                    仅看有余量
+                  </label>
+                  <label class="filter-group">
+                    <button class="switch" type="button" role="switch" aria-checked="false" data-filter="conflict"></button>
+                    时间冲突
+                  </label>
+                  <span class="filter-group muted">教师筛选并入关键词搜索</span>
+                </div>
+
+                <div class="table-wrap">
+                  <table class="course-table">
+                    <thead>
+                      <tr>
+                        <th scope="col" style="width: 58px">加入</th>
+                        <th scope="col">课程</th>
+                        <th scope="col" data-column="capacity">余量</th>
+                        <th scope="col" data-column="teacher">教师</th>
+                        <th scope="col" data-column="time">时间地点</th>
+                        <th scope="col" data-column="status">状态</th>
+                        <th scope="col" style="width: 36px"><span class="sr-only">操作</span></th>
+                      </tr>
+                    </thead>
+                    <tbody data-course-body></tbody>
+                  </table>
+                </div>
+
+              </section>
+
+              <aside class="card queue-panel" aria-label="抢课课程组">
+                <div class="queue-header">
+                  <div class="queue-header-copy">
+                    <div class="queue-title">
+                      抢课队列
+                      <span class="count-badge" data-group-count>3</span>
+                    </div>
+                    <div class="queue-subtitle">同课程按加入顺序形成首选与备选</div>
+                  </div>
+                  <div class="queue-actions">
+                    <button class="button primary queue-run-button" type="button" data-action="toggle-all" aria-pressed="false" aria-label="开始全部课程组" data-queue-toggle>
+                      <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true" data-queue-toggle-icon>
+                        <path d="m8 5 11 7-11 7V5Z" />
+                      </svg>
+                      <span data-queue-toggle-label>开始全部</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="parameters-strip">
+                  <label class="parameter">
+                    <span class="parameter-label">请求间隔</span>
+                    <span class="parameter-value">
+                      <select aria-label="请求间隔" data-param="interval">
+                        <option value="50">50 ms</option>
+                        <option value="100" selected>100 ms</option>
+                        <option value="200">200 ms</option>
+                        <option value="500">500 ms</option>
+                      </select>
+                    </span>
+                  </label>
+                  <label class="parameter">
+                    <span class="parameter-label">每课线程</span>
+                    <span class="parameter-value">
+                      <input class="parameter-number" type="number" inputmode="numeric" min="1" max="20" step="1" value="3" aria-label="每课线程数" data-param="threads" />
+                    </span>
+                  </label>
+                  <label class="parameter">
+                    <span class="parameter-label">抢到即停</span>
+                    <span class="parameter-value">
+                      <button class="switch" type="button" role="switch" aria-checked="true" data-param="auto-stop"></button>
+                    </span>
+                  </label>
+                  <span class="thread-load" data-thread-load>预计 9 线程</span>
+                </div>
+
+                <div class="schedule-strip">
+                  <span class="schedule-strip-label">
+                    <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
+                      <circle cx="12" cy="12" r="8.5" />
+                      <path d="M12 7.5V12l3 2" />
+                    </svg>
+                    定时开抢
+                  </span>
+                  <input class="schedule-date" type="date" aria-label="定时日期" data-schedule-date />
+                  <input class="schedule-time" type="time" step="1" aria-label="定时时间" data-schedule-time />
+                  <span class="schedule-countdown" data-countdown>未启用</span>
+                  <button class="switch" type="button" role="switch" aria-checked="false" aria-label="启用全局定时" data-action="toggle-schedule"></button>
+                </div>
+
+                <div class="group-list" data-group-list></div>
+              </aside>
+            </div>
+          </section>
+
+          <section class="page" data-page-panel="all-courses" aria-label="全校课程">
+            <div class="page-heading">
+              <div class="heading-copy">
+                <div class="heading-kicker">FULL CATALOG</div>
+                <h1 class="page-title">全校课程查询</h1>
+                <p class="page-subtitle">进入页面后自动加载完整列表，再在本地筛选并挑选取课班次。</p>
+              </div>
+              <div class="page-actions">
+                <button class="button" type="button" data-action="load-all">刷新全部课程</button>
+              </div>
+            </div>
+
+            <div class="all-courses-layout">
+              <section class="card all-courses-card">
+                <div class="all-courses-toolbar">
+                  <div class="search-field" style="max-width: 260px">
+                    <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
+                      <circle cx="11" cy="11" r="6.5" />
+                      <path d="m16 16 4 4" />
+                    </svg>
+                    <input class="search-input" type="search" placeholder="关键词 / 教师" aria-label="筛选全校课程" data-all-search />
+                  </div>
+                  <select class="select-compact" aria-label="校区筛选" data-all-campus>
+                    <option value="">全部校区</option>
+                    <option>彭家坪校区</option>
+                    <option>兰工坪校区</option>
+                    <option>网上学习</option>
+                  </select>
+                  <div class="load-progress" data-all-progress>
+                    <div class="load-progress-bar"><span></span></div>
+                    <span>尚未加载</span>
+                  </div>
+                  <span style="flex: 1"></span>
+                  <button class="button small" type="button" data-action="select-visible">全选当前结果</button>
+                </div>
+                <div class="table-wrap">
+                  <table class="course-table">
+                    <thead>
+                      <tr>
+                        <th scope="col" style="width: 30px"><input class="checkbox" type="checkbox" aria-label="选择全部全校课程" data-all-select-all /></th>
+                        <th scope="col">课程</th>
+                        <th scope="col">余量</th>
+                        <th scope="col">教师</th>
+                        <th scope="col">时间地点</th>
+                        <th scope="col">状态</th>
+                      </tr>
+                    </thead>
+                    <tbody data-all-body></tbody>
+                  </table>
+                </div>
+                <div class="table-footer">
+                  <span data-all-count>等待加载</span>
+                  <span class="spacer"></span>
+                  <span class="muted">服务器关键词筛选已关闭</span>
+                </div>
+              </section>
+
+              <aside class="card basket-card">
+                <div class="card-header">
+                  <div class="card-title-wrap">
+                    <div class="card-title">待加入教学班</div>
+                    <div class="card-subtitle">按表格顺序形成首选与备选</div>
+                  </div>
+                  <span class="count-badge" data-basket-count>0</span>
+                </div>
+                <div class="basket-list" data-basket-list>
+                  <div class="empty-state" style="min-height: 190px">
+                    <div class="empty-inner">
+                      <div class="empty-mark">
+                        <svg class="icon icon-lg" viewBox="0 0 24 24" aria-hidden="true">
+                          <path d="M5 7h14l-1.2 10H6.2L5 7Z" />
+                          <path d="M9 7a3 3 0 0 1 6 0" />
+                        </svg>
+                      </div>
+                      <h3 class="empty-title">还没有选择教学班</h3>
+                      <p class="empty-copy">在左侧勾选后，点击下方按钮加入待选。</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="basket-footer">
+                  <div class="basket-total"><span>将创建课程组</span><strong data-basket-groups>0</strong></div>
+                  <button class="button primary" type="button" data-action="all-batch-add" disabled>
+                    <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M12 5v14M5 12h14" />
+                    </svg>
+                    加入抢课队列
+                  </button>
+                </div>
+              </aside>
+            </div>
+          </section>
+
+          <section class="page" data-page-panel="selected" aria-label="已选课程">
+            <div class="page-heading">
+              <div class="heading-copy">
+                <div class="heading-kicker">MY TIMETABLE</div>
+                <h1 class="page-title">已选课程与课表</h1>
+                <p class="page-subtitle">左侧核对课程，右侧查看周网格；冲突和未排入课程都不会被隐藏。</p>
+              </div>
+              <div class="page-actions">
+                <button class="button" type="button" data-action="refresh-selected">
+                  <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M20 7v5h-5M4 17v-5h5" />
+                    <path d="M6.5 8.2A7 7 0 0 1 18.8 11M17.5 15.8A7 7 0 0 1 5.2 13" />
+                  </svg>
+                  刷新
+                </button>
+              </div>
+            </div>
+
+            <div class="selected-layout">
+              <section class="card selected-list-card">
+                <div class="card-header">
+                  <div class="card-title-wrap">
+                    <div class="card-title">已选课程</div>
+                    <div class="card-subtitle">共 7 门 · 2 处时间冲突</div>
+                  </div>
+                  <span class="status-chip warn">有冲突</span>
+                </div>
+                <div class="table-wrap">
+                  <table class="selected-table">
+                    <thead>
+                      <tr>
+                        <th scope="col">课程</th>
+                        <th scope="col">教师</th>
+                        <th scope="col">星期 / 节次</th>
+                      </tr>
+                    </thead>
+                    <tbody data-selected-body></tbody>
+                  </table>
+                </div>
+                <div class="drop-history" data-drop-history>
+                  <div class="drop-history-head" role="button" tabindex="0" aria-expanded="false">
+                    <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M4 7h16M9 7V4h6v3M7 7l1 13h8l1-13" />
+                    </svg>
+                    退课记录
+                    <span class="count-badge">2</span>
+                    <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="m6 9 6 6 6-6" />
+                    </svg>
+                  </div>
+                  <div class="drop-history-body" hidden data-drop-body></div>
+                </div>
+              </section>
+
+              <section class="card timetable-card">
+                <div class="card-header">
+                  <div class="card-title-wrap">
+                    <div class="card-title">周课表</div>
+                    <div class="card-subtitle">结构字段优先，文本解析回退</div>
+                  </div>
+                  <div class="card-tools">
+                    <span class="week-pill" data-week-pill>全部周次</span>
+                  </div>
+                </div>
+                <div class="timetable-toolbar">
+                  <select class="select-compact" aria-label="选择周次" data-week-select>
+                    <option value="all">全部周次</option>
+                  </select>
+                  <span class="muted" style="font-size: 9px" data-week-summary>全部周次 · 7 门课程</span>
+                  <span style="flex: 1"></span>
+                  <span class="status-chip">1–12 节</span>
+                </div>
+                <div class="timetable-wrap">
+                  <div class="timetable" data-timetable></div>
+                </div>
+                <div class="unplaced-list" data-unplaced></div>
+              </section>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+
+    <div class="info-bar" role="status" aria-live="polite" data-info-bar hidden>
+      <span class="info-icon">
+        <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="m6 12 4 4 8-9" />
+        </svg>
+      </span>
+      <div class="info-copy">
+        <div class="info-title" data-info-title>操作已完成</div>
+        <div class="info-message" data-info-message></div>
+      </div>
+      <button class="info-close" type="button" data-action="close-info" aria-label="关闭提示">
+        <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="m7 7 10 10M17 7 7 17" />
+        </svg>
+      </button>
+    </div>
+
+    <aside class="log-dock" data-log-dock>
+      <div class="log-handle" role="button" tabindex="0" aria-expanded="false" data-log-toggle>
+        <span class="log-handle-icon">
+          <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M5 6h14v12H5zM8 9h8M8 12h5M8 15h7" />
+          </svg>
+        </span>
+        <div class="log-handle-copy">
+          <div class="log-handle-title">请求日志</div>
+          <div class="log-handle-meta" data-log-count>8 条记录 · 2 个活跃任务</div>
+        </div>
+        <span class="log-latest" data-log-latest>尚未收到新日志</span>
+        <svg class="icon icon-sm icon-chevron" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="m6 9 6 6 6-6" />
+        </svg>
+      </div>
+      <div class="log-body">
+        <div class="log-toolbar">
+          <div class="log-filters">
+            <select class="select-compact" aria-label="按课程组筛选日志" data-log-group>
+              <option value="all">全部课程组</option>
+            </select>
+            <select class="select-compact" aria-label="按级别筛选日志" data-log-level>
+              <option value="all">全部级别</option>
+              <option value="INFO">INFO</option>
+              <option value="SUCCESS">SUCCESS</option>
+              <option value="WARN">WARN</option>
+              <option value="ERROR">ERROR</option>
+            </select>
+          </div>
+          <span class="spacer"></span>
+          <button class="button small ghost" type="button" data-action="export-log">导出</button>
+          <button class="button small ghost danger" type="button" data-action="clear-log">清空</button>
+        </div>
+        <div class="log-list" data-log-list></div>
+        <button class="log-to-bottom" type="button" data-action="log-bottom" hidden>
+          回到最新
+          <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 5v14M7 14l5 5 5-5" />
+          </svg>
+        </button>
+      </div>
+    </aside>
+
+    <div class="detail-scrim" data-detail-scrim hidden></div>
+    <aside class="detail-drawer" aria-label="课程详情" aria-hidden="true" data-detail-drawer>
+      <div class="drawer-head">
+        <div class="drawer-title">
+          <div class="drawer-kicker">COURSE DETAIL</div>
+          <h2 data-detail-title>课程详情</h2>
+          <p data-detail-subtitle>从课程表格选择一门课</p>
+        </div>
+        <button class="icon-button" type="button" data-action="close-detail" aria-label="关闭课程详情">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="m7 7 10 10M17 7 7 17" />
+          </svg>
+        </button>
+      </div>
+      <div class="drawer-body" data-detail-body></div>
+      <div class="drawer-footer" data-detail-footer>
+        <button class="button primary" type="button" data-action="detail-add">
+          <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 5v14M5 12h14" />
+          </svg>
+          加入抢课队列
+        </button>
+        <button class="button" type="button" data-action="close-detail">关闭</button>
+      </div>
+    </aside>
+
+    <div class="modal-scrim" data-modal-scrim hidden></div>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="dup-title" data-modal hidden>
+      <div class="modal-head">
+        <span class="modal-mark">
+          <svg class="icon icon-lg" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 4 3.7 19h16.6L12 4Z" />
+            <path d="M12 9v4M12 16.5v.1" />
+          </svg>
+        </span>
+        <div class="modal-copy">
+          <h3 id="dup-title" data-modal-title>该教学班已在课程组中</h3>
+          <p data-modal-copy>课程组内每个教学班只保留一个实例，可以选择忽略，或把已有实例移到备选末尾。</p>
+        </div>
+      </div>
+      <div class="modal-body">
+        <div class="modal-note" data-modal-note>课程名称占位 A · 01 班 · 教师甲</div>
+      </div>
+      <div class="modal-actions">
+        <button class="button ghost" type="button" data-action="modal-cancel">取消</button>
+        <button class="button" type="button" data-action="modal-move">移到末尾</button>
+        <button class="button primary" type="button" data-action="modal-ignore">忽略重复</button>
+      </div>
+    </div>
+
+    <div data-menu-root></div>
+    <div class="toast-region" data-toast-region></div>
+    
+<style>
+  body.is-login-open .app-shell {
+    filter: blur(2px);
+    pointer-events: none;
+    user-select: none;
+  }
+  .login-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 300;
+    overflow: auto;
+    background: rgba(30, 40, 35, 0.18);
+    backdrop-filter: blur(8px);
+  }
+  .login-overlay.is-hidden {
+    display: none;
+  }
+  .login-overlay .login-stage {
+    min-height: 100vh;
+    padding: 24px;
+  }
+  .login-overlay .login-brandbar {
+    display: none;
+  }
+</style>
+<script>
+(function () {
+  document.body.classList.add("is-login-open");
+  function setupLoginOverlay() {
+    const overlay = document.getElementById("loginOverlay");
+    const form = document.getElementById("login-form");
+    if (!overlay || !form) return;
+    form.addEventListener("submit", function (event) {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      const password = document.getElementById("password");
+      const captcha = document.getElementById("captcha");
+      const error = document.getElementById("login-error");
+      const errorText = document.getElementById("login-error-text");
+      if (!password.value.trim()) {
+        errorText.textContent = "请输入密码。";
+        error.hidden = false;
+        password.focus();
+        return;
+      }
+      if (captcha.value.trim().length < 4) {
+        errorText.textContent = "请输入至少 4 位验证码。";
+        error.hidden = false;
+        captcha.focus();
+        return;
+      }
+      overlay.classList.add("is-hidden");
+      document.body.classList.remove("is-login-open");
+    }, true);
+  }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", setupLoginOverlay);
+  } else {
+    setupLoginOverlay();
+  }
+})();
+</script>
+<script>
+window.LUTHelperMock = {
+  session: {
+    name: "示例同学",
+    username: "2024********",
+    college: "计算机与人工智能学院",
+    major: "物联网工程",
+    batch: "2026 年秋季学期正选",
+    online: "在线",
+  },
+
+  batches: [
+    "2026 年秋季学期正选",
+    "2026 年秋季学期补选",
+    "2026 年秋季学期重修选课",
+  ],
+
+  courses: [
+    {
+      id: "C0200501",
+      code: "C02005",
+      name: "课程名称占位 A",
+      teacher: "教师甲",
+      classNo: "01",
+      classId: "202620271C0200501",
+      campus: "彭家坪校区",
+      credits: "1.0",
+      hours: "20",
+      selected: 15,
+      capacity: 15,
+      conflict: false,
+      time: "3-12 周 星期日 第 7 节-第 8 节",
+      nature: "公共选修课",
+      department: "开课单位占位",
+    },
+    {
+      id: "C0200502",
+      code: "C02005",
+      name: "课程名称占位 A",
+      teacher: "教师乙",
+      classNo: "02",
+      classId: "202620271C0200502",
+      campus: "彭家坪校区",
+      credits: "1.0",
+      hours: "20",
+      selected: 12,
+      capacity: 15,
+      conflict: false,
+      time: "3-12 周 星期六 第 5 节-第 6 节",
+      nature: "公共选修课",
+      department: "开课单位占位",
+    },
+    {
+      id: "C0310801",
+      code: "C03108",
+      name: "课程名称占位 B",
+      teacher: "教师丙",
+      classNo: "01",
+      classId: "202620271C0310801",
+      campus: "彭家坪校区",
+      credits: "2.0",
+      hours: "32",
+      selected: 38,
+      capacity: 40,
+      conflict: true,
+      time: "1-8 周 星期一 第 3 节-第 4 节",
+      nature: "专业选修课",
+      department: "开课单位占位",
+    },
+    {
+      id: "C0310802",
+      code: "C03108",
+      name: "课程名称占位 B",
+      teacher: "教师丁",
+      classNo: "02",
+      classId: "202620271C0310802",
+      campus: "兰工坪校区",
+      credits: "2.0",
+      hours: "32",
+      selected: 40,
+      capacity: 40,
+      conflict: false,
+      time: "1-8 周 星期三 第 3 节-第 4 节",
+      nature: "专业选修课",
+      department: "开课单位占位",
+    },
+    {
+      id: "C0420101",
+      code: "C04201",
+      name: "课程名称占位 C",
+      teacher: "教师戊",
+      classNo: "01",
+      classId: "202620271C0420101",
+      campus: "彭家坪校区",
+      credits: "1.5",
+      hours: "24",
+      selected: 27,
+      capacity: 30,
+      conflict: false,
+      time: "5-16 周 星期二 第 9 节-第 10 节",
+      nature: "通识教育课",
+      department: "开课单位占位",
+    },
+    {
+      id: "C0530201",
+      code: "C05302",
+      name: "课程名称占位 D",
+      teacher: "教师己",
+      classNo: "01",
+      classId: "202620271C0530201",
+      campus: "彭家坪校区",
+      credits: "2.0",
+      hours: "32",
+      selected: 8,
+      capacity: 35,
+      conflict: true,
+      time: "9-16 周 星期四 第 5 节-第 6 节",
+      nature: "学科基础课",
+      department: "开课单位占位",
+    },
+    {
+      id: "C0640101",
+      code: "C06401",
+      name: "课程名称占位 E",
+      teacher: "教师庚",
+      classNo: "01",
+      classId: "202620271C0640101",
+      campus: "网上学习",
+      credits: "1.0",
+      hours: "16",
+      selected: 48,
+      capacity: 80,
+      conflict: false,
+      time: "1-16 周 星期五 第 7 节-第 8 节",
+      nature: "公共选修课",
+      department: "开课单位占位",
+    },
+  ],
+
+  allCourses: [
+    {
+      id: "A0010101",
+      code: "A00101",
+      name: "全校课程占位 001",
+      teacher: "教师 A",
+      classNo: "01",
+      classId: "202620271A0010101",
+      campus: "彭家坪校区",
+      credits: "2.0",
+      hours: "32",
+      selected: 21,
+      capacity: 40,
+      conflict: false,
+      time: "1-16 周 星期一 第 1 节-第 2 节",
+      nature: "学科基础课",
+      department: "开课单位占位",
+    },
+    {
+      id: "A0010102",
+      code: "A00101",
+      name: "全校课程占位 001",
+      teacher: "教师 B",
+      classNo: "02",
+      classId: "202620271A0010102",
+      campus: "兰工坪校区",
+      credits: "2.0",
+      hours: "32",
+      selected: 40,
+      capacity: 40,
+      conflict: false,
+      time: "1-16 周 星期三 第 5 节-第 6 节",
+      nature: "学科基础课",
+      department: "开课单位占位",
+    },
+    {
+      id: "A0020101",
+      code: "A00201",
+      name: "全校课程占位 002",
+      teacher: "教师 C",
+      classNo: "01",
+      classId: "202620271A0020101",
+      campus: "彭家坪校区",
+      credits: "1.5",
+      hours: "24",
+      selected: 18,
+      capacity: 30,
+      conflict: true,
+      time: "3-12 周 星期二 第 3 节-第 4 节",
+      nature: "专业选修课",
+      department: "开课单位占位",
+    },
+    {
+      id: "A0030101",
+      code: "A00301",
+      name: "全校课程占位 003",
+      teacher: "教师 D",
+      classNo: "01",
+      classId: "202620271A0030101",
+      campus: "彭家坪校区",
+      credits: "2.0",
+      hours: "32",
+      selected: 29,
+      capacity: 50,
+      conflict: false,
+      time: "1-16 周 星期四 第 7 节-第 8 节",
+      nature: "通识教育课",
+      department: "开课单位占位",
+    },
+    {
+      id: "A0040101",
+      code: "A00401",
+      name: "全校课程占位 004",
+      teacher: "教师 E",
+      classNo: "01",
+      classId: "202620271A0040101",
+      campus: "网上学习",
+      credits: "1.0",
+      hours: "16",
+      selected: 70,
+      capacity: 80,
+      conflict: false,
+      time: "1-16 周 星期五 第 9 节-第 10 节",
+      nature: "公共选修课",
+      department: "开课单位占位",
+    },
+  ],
+
+  groups: [
+    {
+      id: "group-a",
+      code: "C02005",
+      name: "课程名称占位 A",
+      state: "running",
+      tasks: [
+        {
+          id: "task-a1",
+          classId: "202620271C0200501",
+          classNo: "01",
+          teacher: "教师甲",
+          campus: "彭家坪校区",
+          time: "星期日 第 7 节-第 8 节",
+          state: "active",
+          attempts: 48,
+          selected: 15,
+          capacity: 15,
+          role: "首选",
+        },
+        {
+          id: "task-a2",
+          classId: "202620271C0200502",
+          classNo: "02",
+          teacher: "教师乙",
+          campus: "彭家坪校区",
+          time: "星期六 第 5 节-第 6 节",
+          state: "standby",
+          attempts: 0,
+          selected: 12,
+          capacity: 15,
+          role: "备选 1",
+        },
+      ],
+    },
+    {
+      id: "group-b",
+      code: "C03108",
+      name: "课程名称占位 B",
+      state: "paused",
+      tasks: [
+        {
+          id: "task-b1",
+          classId: "202620271C0310801",
+          classNo: "01",
+          teacher: "教师丙",
+          campus: "彭家坪校区",
+          time: "星期一 第 3 节-第 4 节",
+          state: "paused",
+          attempts: 116,
+          selected: 39,
+          capacity: 40,
+          role: "首选",
+        },
+        {
+          id: "task-b2",
+          classId: "202620271C0310802",
+          classNo: "02",
+          teacher: "教师丁",
+          campus: "兰工坪校区",
+          time: "星期三 第 3 节-第 4 节",
+          state: "standby",
+          attempts: 0,
+          selected: 40,
+          capacity: 40,
+          role: "备选 1",
+        },
+      ],
+    },
+    {
+      id: "group-c",
+      code: "C04201",
+      name: "课程名称占位 C",
+      state: "success",
+      successTask: "01 班 · 教师戊",
+      successTime: "21:08:42",
+      tasks: [
+        {
+          id: "task-c1",
+          classId: "202620271C0420101",
+          classNo: "01",
+          teacher: "教师戊",
+          campus: "彭家坪校区",
+          time: "星期二 第 9 节-第 10 节",
+          state: "success",
+          attempts: 32,
+          selected: 28,
+          capacity: 30,
+          role: "首选",
+        },
+      ],
+    },
+  ],
+
+  selectedCourses: [
+    {
+      id: "S001",
+      code: "S00101",
+      name: "已选课程占位 A",
+      teacher: "教师 1",
+      time: "1-16 周 星期一 第 1 节-第 2 节",
+      weekdayLabel: "星期一",
+      weekday: 1,
+      start: 1,
+      end: 2,
+      weeks: "1-16",
+      weekMask: "11111111111111110000",
+      place: "教学楼 A101",
+      conflict: false,
+      color: "teal",
+    },
+    {
+      id: "S002",
+      code: "S00201",
+      name: "已选课程占位 B",
+      teacher: "教师 2",
+      time: "1-12 周 星期一 第 3 节-第 4 节",
+      weekdayLabel: "星期一",
+      weekday: 1,
+      start: 3,
+      end: 4,
+      weeks: "1-12",
+      weekMask: "11111111111100000000",
+      place: "教学楼 B203",
+      conflict: true,
+      color: "amber",
+    },
+    {
+      id: "S003",
+      code: "S00301",
+      name: "已选课程占位 C",
+      teacher: "教师 3",
+      time: "3-16 周 星期二 第 5 节-第 6 节",
+      weekdayLabel: "星期二",
+      weekday: 2,
+      start: 5,
+      end: 6,
+      weeks: "3-16",
+      weekMask: "00111111111111110000",
+      place: "教学楼 C305",
+      conflict: false,
+      color: "blue",
+    },
+    {
+      id: "S004",
+      code: "S00401",
+      name: "已选课程占位 D",
+      teacher: "教师 4",
+      time: "1-16 周 星期三 第 3 节-第 4 节",
+      weekdayLabel: "星期三",
+      weekday: 3,
+      start: 3,
+      end: 4,
+      weeks: "1-16",
+      weekMask: "11111111111111110000",
+      place: "实验楼 D108",
+      conflict: true,
+      color: "rose",
+    },
+    {
+      id: "S005",
+      code: "S00501",
+      name: "已选课程占位 E",
+      teacher: "教师 5",
+      time: "5-16 周 星期四 第 7 节-第 8 节",
+      weekdayLabel: "星期四",
+      weekday: 4,
+      start: 7,
+      end: 8,
+      weeks: "5-16",
+      weekMask: "00001111111111110000",
+      place: "教学楼 A207",
+      conflict: false,
+      color: "violet",
+    },
+    {
+      id: "S006",
+      code: "S00601",
+      name: "已选课程占位 F",
+      teacher: "教师 6",
+      time: "1-8 周 星期五 第 9 节-第 10 节",
+      weekdayLabel: "星期五",
+      weekday: 5,
+      start: 9,
+      end: 10,
+      weeks: "1-8",
+      weekMask: "11111111000000000000",
+      place: "教学楼 E110",
+      conflict: false,
+      color: "slate",
+    },
+    {
+      id: "S007",
+      code: "S00701",
+      name: "已选课程占位 G",
+      teacher: "教师 7",
+      time: "1-16 周 星期六 第 11 节-第 12 节",
+      weekdayLabel: "星期六",
+      weekday: 6,
+      start: 11,
+      end: 12,
+      weeks: "1-16",
+      weekMask: "11111111111111110000",
+      place: "教学楼 F401",
+      conflict: false,
+      color: "teal",
+    },
+  ],
+
+  unplacedCourses: [
+    {
+      id: "S008",
+      code: "S00801",
+      name: "未排入网格课程占位",
+      teacher: "教师 8",
+      time: "时间文本无法解析",
+    },
+  ],
+
+  dropHistory: [
+    {
+      name: "退课记录占位 A",
+      time: "2026-10-18 16:42",
+      reason: "已退课",
+    },
+    {
+      name: "退课记录占位 B",
+      time: "2026-10-16 09:17",
+      reason: "已退课",
+    },
+  ],
+
+  logs: [
+    { time: "21:09:02", level: "INFO", message: "[课程组 A / 01 班] 正在等待下一次请求，间隔 100ms" },
+    { time: "21:09:01", level: "INFO", message: "[课程组 A / 01 班] POST /elective/clazz/add → 已进入选课队列" },
+    { time: "21:08:58", level: "WARN", message: "[课程组 B / 01 班] 响应原因暂无法识别，继续按原间隔重试" },
+    { time: "21:08:42", level: "SUCCESS", message: "[课程组 C / 01 班] 检测到选课成功：选课成功" },
+    { time: "21:08:42", level: "INFO", message: "[课程组 C] 已停止组内其他任务，课程组状态更新为成功" },
+    { time: "21:08:39", level: "INFO", message: "[课程组 C / 01 班] POST /elective/clazz/add → code=200" },
+    { time: "21:08:35", level: "ERROR", message: "[课程组 B / 02 班] 当前教学班已满，暂停该任务并等待首选恢复检查" },
+    { time: "21:08:30", level: "INFO", message: "[全局] 当前活跃任务 2 个，请求线程 6 个" },
+  ],
+};
+
+(function () {
+  "use strict";
+
+  const mock = window.LUTHelperMock;
+  if (!mock) {
+    throw new Error("缺少 mock-data.js");
+  }
+
+  const ICONS = {
+    chevron: '<svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>',
+    plus: '<svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>',
+    more: '<svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="18" cy="12" r="1"/></svg>',
+    play: '<svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="m8 5 11 7-11 7V5Z"/></svg>',
+    pause: '<svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6v12M16 6v12"/></svg>',
+    stop: '<svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="1"/></svg>',
+    alert: '<svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4 3.7 19h16.6L12 4Z"/><path d="M12 9v4M12 16.5v.1"/></svg>',
+    check: '<svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 12 4 4 8-9"/></svg>',
+    clock: '<svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>',
+    book: '<svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5h16v13H4z"/><path d="M8 5.5v13M4 10h16"/></svg>',
+    grip: '<svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="7" r="1"/><circle cx="16" cy="7" r="1"/><circle cx="8" cy="12" r="1"/><circle cx="16" cy="12" r="1"/><circle cx="8" cy="17" r="1"/><circle cx="16" cy="17" r="1"/></svg>',
+    warning: '<svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4 3.7 19h16.6L12 4Z"/><path d="M12 9v4M12 16.5v.1"/></svg>',
+    chevronLeft: '<svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg>',
+    x: '<svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 7 10 10M17 7 7 17"/></svg>',
+  };
+
+  const state = {
+    page: "courses",
+    basket: [],
+    allLoaded: false,
+    allLoading: false,
+    filtersOpen: false,
+    localFilters: {
+      available: false,
+      conflict: false,
+    },
+    schedule: null,
+    countdownTimer: null,
+    lastFocusedCourse: null,
+    draggedTask: null,
+    activeModalAction: null,
+    pendingDuplicates: [],
+    muted: false,
+    logOpen: false,
+    logUserScrolled: false,
+    logs: mock.logs.map((entry) => ({ ...entry })),
+    selectedWeek: "all",
+    currentDetail: null,
+    groups: structuredClone(mock.groups),
+  };
+
+  const $ = (selector, root = document) => root.querySelector(selector);
+  const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
+  const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
+  const escapeHtml = (value) =>
+    String(value ?? "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+
+  const courseById = new Map(mock.courses.map((course) => [course.id, course]));
+  const allCourseById = new Map(mock.allCourses.map((course) => [course.id, course]));
+
+  function capacityPercent(course) {
+    if (!course.capacity) return 0;
+    return clamp(Math.round((course.selected / course.capacity) * 100), 0, 100);
+  }
+
+  function capacityLabel(course) {
+    return `${course.selected}/${course.capacity}`;
+  }
+
+  function statusMarkup(course) {
+    if (course.selected >= course.capacity) {
+      return '<span class="status-chip danger">已满</span>';
+    }
+    if (course.conflict) {
+      return '<span class="status-chip warn">冲突</span>';
+    }
+    return '<span class="status-chip live">可选</span>';
+  }
+
+  function capMarkup(course) {
+    const percent = capacityPercent(course);
+    const mode = percent >= 100 ? "full" : percent >= 80 ? "warn" : "";
+    return `
+      <div class="capacity">
+        <span class="capacity-bar ${mode}" aria-hidden="true"><span style="width:${percent}%"></span></span>
+        <span class="capacity-text">${capacityLabel(course)}</span>
+      </div>
+    `;
+  }
+
+  function courseRowMarkup(course) {
+    const added = state.groups.some((group) => group.code === course.code && group.tasks.some((task) => task.classId === course.classId));
+    const conflict = course.conflict ? `<span class="conflict-mark">${ICONS.alert}冲突</span>` : "";
+    return `
+      <tr data-course-id="${escapeHtml(course.id)}" class="${added ? "is-added" : ""}">
+        <td>
+          <button class="add-course ${added ? "is-added" : ""}" type="button" data-course-add="${escapeHtml(course.id)}" aria-label="${added ? "取消加入抢课队列" : "加入抢课队列"}" title="${added ? "再次点击取消加入" : "加入抢课队列"}">
+            ${added ? ICONS.check : ICONS.plus}
+            <span>${added ? "已加入" : "加入"}</span>
+          </button>
+        </td>
+        <td>
+          <div class="course-name"><button class="course-name-button" type="button" data-detail-course="${escapeHtml(course.id)}" title="${escapeHtml(course.name)}">${escapeHtml(course.name)}</button></div>
+          <div class="course-code">${escapeHtml(course.code)} · 课序号 ${escapeHtml(course.classNo)}</div>
+        </td>
+        <td data-column-body="capacity">${capMarkup(course)}</td>
+        <td data-column-body="teacher"><span class="teacher">${escapeHtml(course.teacher)}</span></td>
+        <td data-column-body="time"><span class="time-cell" title="${escapeHtml(course.time)}">${escapeHtml(course.time)}</span></td>
+        <td data-column-body="status">${conflict || statusMarkup(course)}</td>
+        <td><button class="more-button" type="button" data-course-menu="${escapeHtml(course.id)}" aria-label="更多课程操作">${ICONS.more}</button></td>
+      </tr>
+    `;
+  }
+
+  function renderCourses() {
+    const tbody = $("[data-course-body]");
+    if (!tbody) return;
+    tbody.innerHTML = mock.courses.map(courseRowMarkup).join("");
+    $("[data-course-summary]").textContent = `当前轮次 · ${mock.courses.length} 个教学班`;
+  }
+
+  function renderAllCourses() {
+    const tbody = $("[data-all-body]");
+    if (!tbody) return;
+    if (!state.allLoaded) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="6">
+            <div class="empty-state" style="min-height:360px">
+              <div class="empty-inner">
+                <div class="empty-mark">${ICONS.book}</div>
+                <h3 class="empty-title">正在准备全校课程</h3>
+                <p class="empty-copy">进入页面后会自动加载，加载完成后可在这里本地筛选。</p>
+              </div>
+            </div>
+          </td>
+        </tr>
+      `;
+      $("[data-all-count]").textContent = "等待加载";
+      return;
+    }
+    const keyword = ($("[data-all-search]")?.value || "").trim().toLowerCase();
+    const campus = $("[data-all-campus]")?.value || "";
+    const visible = mock.allCourses.filter((course) => {
+      const matchesKeyword =
+        !keyword ||
+        `${course.name} ${course.teacher} ${course.code} ${course.classNo}`.toLowerCase().includes(keyword);
+      const matchesCampus = !campus || course.campus === campus;
+      return matchesKeyword && matchesCampus;
+    });
+    tbody.innerHTML = visible.map((course) => allCourseRowMarkup(course)).join("");
+    $("[data-all-count]").textContent =
+      visible.length === mock.allCourses.length
+        ? `已加载 ${mock.allCourses.length} 个教学班`
+        : `显示 ${visible.length} / ${mock.allCourses.length} 个教学班`;
+    syncAllSelect();
+  }
+
+  function allCourseRowMarkup(course) {
+    const selected = state.basket.includes(course.id);
+    return `
+      <tr data-all-id="${escapeHtml(course.id)}" class="${selected ? "is-selected" : ""}">
+        <td><input class="checkbox" type="checkbox" aria-label="选择${escapeHtml(course.name)} ${escapeHtml(course.classNo)}班" ${selected ? "checked" : ""} data-all-check /></td>
+        <td>
+          <div class="course-name"><button class="course-name-button" type="button" data-detail-all="${escapeHtml(course.id)}">${escapeHtml(course.name)}</button></div>
+          <div class="course-code">${escapeHtml(course.code)} · 课序号 ${escapeHtml(course.classNo)}</div>
+        </td>
+        <td>${capMarkup(course)}</td>
+        <td><span class="teacher">${escapeHtml(course.teacher)}</span></td>
+        <td><span class="time-cell" title="${escapeHtml(course.time)}">${escapeHtml(course.time)}</span></td>
+        <td>${statusMarkup(course)}</td>
+      </tr>
+    `;
+  }
+
+  function syncAllSelect() {
+    const check = $("[data-all-select-all]");
+    if (!check) return;
+    check.checked = mock.allCourses.length > 0 && mock.allCourses.every((course) => state.basket.includes(course.id));
+    check.indeterminate = state.basket.length > 0 && !check.checked;
+  }
+
+  function renderBasket() {
+    const list = $("[data-basket-list]");
+    if (!list) return;
+    if (!state.basket.length) {
+      list.innerHTML = `
+        <div class="empty-state" style="min-height:190px">
+          <div class="empty-inner">
+            <div class="empty-mark">${ICONS.book}</div>
+            <h3 class="empty-title">还没有选择教学班</h3>
+            <p class="empty-copy">在左侧勾选后，点击下方按钮加入待选。</p>
+          </div>
+        </div>
+      `;
+    } else {
+      list.innerHTML = state.basket
+        .map((id) => {
+          const course = allCourseById.get(id);
+          if (!course) return "";
+          return `
+            <div class="basket-item">
+              <span class="basket-code">${escapeHtml(course.classNo)}</span>
+              <div class="basket-copy">
+                <div class="basket-name">${escapeHtml(course.name)}</div>
+                <div class="basket-meta">${escapeHtml(course.teacher)} · ${escapeHtml(course.campus)}</div>
+              </div>
+              <button class="more-button" type="button" data-basket-remove="${escapeHtml(course.id)}" aria-label="移出待加入列表">${ICONS.x}</button>
+            </div>
+          `;
+        })
+        .join("");
+    }
+    const groups = new Set(state.basket.map((id) => allCourseById.get(id)?.code).filter(Boolean));
+    $("[data-basket-count]").textContent = state.basket.length;
+    $("[data-basket-groups]").textContent = groups.size;
+    $('[data-action="all-batch-add"]').disabled = state.basket.length === 0;
+  }
+
+  function groupStateLabel(group) {
+    if (group.state === "success") return '<span class="status-chip live">已成功</span>';
+    if (group.state === "running") return '<span class="status-chip live">运行中</span>';
+    if (group.state === "paused") return '<span class="status-chip warn">已暂停</span>';
+    return '<span class="status-chip neutral">待开始</span>';
+  }
+
+  function taskStateIcon(task) {
+    if (task.state === "active") return ICONS.play;
+    if (task.state === "paused") return ICONS.pause;
+    if (task.state === "success") return ICONS.check;
+    return ICONS.clock;
+  }
+
+  function taskClass(task) {
+    if (task.state === "active") return "is-active";
+    if (task.state === "paused") return "is-paused";
+    if (task.selected >= task.capacity) return "is-full";
+    return "";
+  }
+
+  function renderGroups() {
+    const list = $("[data-group-list]");
+    if (!list) return;
+    list.innerHTML = state.groups.length
+      ? state.groups.map(groupMarkup).join("")
+      : `
+        <div class="empty-state" style="min-height:300px">
+          <div class="empty-inner">
+            <div class="empty-mark">${ICONS.clock}</div>
+            <h3 class="empty-title">抢课队列还是空的</h3>
+            <p class="empty-copy">从左侧点击教学班的“加入”，会按课程代码自动形成课程组。</p>
+            <button class="button primary" type="button" data-action="focus-course-search">选择课程</button>
+          </div>
+        </div>
+      `;
+    $("[data-group-count]").textContent = state.groups.length;
+    updateThreadLoad();
+    updateQueueToggle();
+  }
+
+  function updateQueueToggle() {
+    const button = $("[data-queue-toggle]");
+    if (!button) return;
+    const running = state.groups.some((group) => group.state === "running");
+    button.dataset.stopMode = String(running);
+    button.classList.toggle("is-stop", running);
+    button.setAttribute("aria-pressed", String(running));
+    button.setAttribute("aria-label", running ? "全部停止" : "开始全部课程组");
+    const label = $("[data-queue-toggle-label]", button);
+    if (label) label.textContent = running ? "全部停止" : "开始全部";
+    const icon = $("[data-queue-toggle-icon]", button);
+    if (icon) {
+      icon.innerHTML = running
+        ? '<rect x="6" y="6" width="12" height="12" rx="1"/>'
+        : '<path d="m8 5 11 7-11 7V5Z"/>';
+    }
+  }
+
+  function groupMarkup(group) {
+    const success = group.state === "success" ? "is-success" : "";
+    const single = group.tasks.length === 1;
+    const collapsed = group.collapsed ? "is-collapsed" : "";
+    const action = group.state === "running"
+      ? `<button class="group-action" type="button" data-group-pause="${group.id}" aria-label="暂停整组">${ICONS.pause}</button>`
+      : `<button class="group-action" type="button" data-group-start="${group.id}" aria-label="开始整组">${ICONS.play}</button>`;
+    return `
+      <article class="group-card ${collapsed} ${single ? "is-single" : ""} ${success}" data-group-id="${escapeHtml(group.id)}">
+        <div class="group-head">
+          ${single ? "" : `<button class="group-expand" type="button" data-group-collapse="${group.id}" aria-label="展开或收起课程组" aria-expanded="${String(!group.collapsed)}">${ICONS.chevron}</button>`}
+          <span class="group-symbol">${escapeHtml(group.code.slice(-2))}</span>
+          <div class="group-copy">
+            <div class="group-name">${escapeHtml(group.name)} ${single ? `<span class="single-class">${escapeHtml(group.tasks[0].classNo)} 班</span>` : ""}</div>
+            <div class="group-meta">${groupStateLabel(group)} ${single ? `<span>·</span><span>${escapeHtml(group.tasks[0].teacher)} · ${escapeHtml(group.tasks[0].campus)}</span>` : `<span>·</span><span>${group.tasks.length} 个教学班</span>`}</div>
+          </div>
+          <div class="group-actions">
+            ${action}
+            <button class="group-action" type="button" data-group-stop="${group.id}" aria-label="停止整组">${ICONS.stop}</button>
+            <button class="group-action" type="button" data-group-menu="${group.id}" aria-label="课程组更多操作">${ICONS.more}</button>
+          </div>
+        </div>
+        ${single ? `
+        <div class="single-task-row">
+          <span class="single-task-time">${escapeHtml(group.tasks[0].time)}</span>
+          <span class="single-task-capacity">${group.tasks[0].selected}/${group.tasks[0].capacity}</span>
+          <span class="single-task-attempts">${group.tasks[0].attempts} 次</span>
+        </div>` : ""}
+        <div class="group-body">
+          ${
+            group.state === "success"
+              ? `
+                <div class="group-result">
+                  <span class="result-check">${ICONS.check}</span>
+                  <div class="result-copy">
+                    <div class="result-title">已抢到 ${escapeHtml(group.successTask)}</div>
+                    <div class="result-meta">${escapeHtml(group.successTime)} · 组内其他任务已停止</div>
+                  </div>
+                </div>
+              `
+              : `<div class="task-list">${group.tasks.map((task, index) => taskMarkup(group, task, index)).join("")}</div>`
+          }
+        </div>
+      </article>
+    `;
+  }
+
+  function taskMarkup(group, task, index) {
+    const role = index === 0 ? "首选" : `备选 ${index}`;
+    return `
+      <div class="task ${taskClass(task)}" draggable="true" data-task-id="${escapeHtml(task.id)}" data-group-id="${escapeHtml(group.id)}">
+        <span class="task-priority">${String(index + 1).padStart(2, "0")}</span>
+        <span class="task-state-icon">${taskStateIcon(task)}</span>
+        <div class="task-copy">
+          <div class="task-name"><span>${escapeHtml(task.classNo)} 班 · ${escapeHtml(task.teacher)}</span><span class="role">${role}</span></div>
+          <div class="task-meta">${escapeHtml(task.campus)} · ${escapeHtml(task.time)} · ${task.selected}/${task.capacity}</div>
+        </div>
+        <div class="task-info">
+          <div class="task-attempt">${task.attempts} 次</div>
+          <button class="task-menu" type="button" data-task-menu="${escapeHtml(task.id)}" aria-label="任务更多操作">${ICONS.more}</button>
+        </div>
+      </div>
+    `;
+  }
+
+  function updateThreadLoad() {
+    const input = $('[data-param="threads"]');
+    const threads = Math.min(20, Math.max(1, Number(input?.value) || 3));
+    if (input && input.value && Number(input.value) !== threads) input.value = String(threads);
+    const activeTasks = state.groups.reduce(
+      (count, group) => count + group.tasks.filter((task) => task.state === "active").length,
+      0,
+    );
+    const display = activeTasks || state.groups.filter((group) => group.state !== "success").length;
+    const total = Math.max(display, 1) * threads;
+    const el = $("[data-thread-load]");
+    if (!el) return;
+    el.textContent = `预计 ${total} 线程`;
+    el.style.color = total > 50 ? "var(--red)" : total > 20 ? "var(--amber)" : "var(--teal)";
+    el.style.background = total > 50 ? "var(--red-soft)" : total > 20 ? "var(--amber-soft)" : "var(--teal-pale)";
+  }
+
+  function renderSelected() {
+    const body = $("[data-selected-body]");
+    if (!body) return;
+    body.innerHTML = mock.selectedCourses
+      .map(
+        (course) => `
+        <tr data-selected-id="${escapeHtml(course.id)}">
+          <td>
+            <div class="course-name">
+              <button class="course-name-button" type="button" data-selected-detail="${escapeHtml(course.id)}">${escapeHtml(course.name)}</button>
+            </div>
+            <div class="course-code">${escapeHtml(course.code)}</div>
+          </td>
+          <td>${escapeHtml(course.teacher)}</td>
+          <td>
+            <div style="font-size:9px;font-weight:700;color:var(--ink-soft)">${escapeHtml(course.weekdayLabel)}</div>
+            <div style="font-size:8px;color:var(--muted)">第 ${course.start}–${course.end} 节 · ${escapeHtml(course.weeks)} 周</div>
+          </td>
+        </tr>
+      `,
+      )
+      .join("");
+    const dropBody = $("[data-drop-body]");
+    if (dropBody) {
+      dropBody.innerHTML = mock.dropHistory
+        .map(
+          (record) => `
+            <div class="drop-record">
+              <strong>${escapeHtml(record.name)}</strong>
+              <span>${escapeHtml(record.time)}</span>
+              <span style="margin-left:auto">${escapeHtml(record.reason)}</span>
+            </div>
+          `,
+        )
+        .join("");
+    }
+  }
+
+  function renderTimetable() {
+    const table = $("[data-timetable]");
+    if (!table) return;
+    const days = ["星期一", "星期二", "星期三", "星期四", "星期五", "星期六", "星期日"];
+    const timeLabels = {
+      1: "08:00",
+      2: "09:50",
+      3: "10:00",
+      4: "12:00",
+      5: "14:30",
+      6: "16:20",
+      7: "16:40",
+      8: "18:30",
+      9: "19:30",
+      10: "21:20",
+      11: "21:30",
+      12: "22:20",
+    };
+    const filterWeek = state.selectedWeek === "all" ? null : Number(state.selectedWeek);
+    const visibleCourses = mock.selectedCourses.filter((course) => {
+      if (filterWeek === null) return true;
+      return course.weekMask[filterWeek - 1] === "1";
+    });
+
+    let html = '<div class="timetable-head timetable-corner">节次</div>';
+    html += days.map((day) => `<div class="timetable-head">${day}</div>`).join("");
+    for (let section = 1; section <= 12; section += 1) {
+      html += `<div class="section-label"><span>${section}</span><span>${timeLabels[section]}</span></div>`;
+      for (let day = 1; day <= 7; day += 1) {
+        const occupying = visibleCourses.find(
+          (course) => course.weekday === day && section >= course.start && section <= course.end,
+        );
+        if (occupying && occupying.start === section) {
+          const span = occupying.end - occupying.start + 1;
+          const conflict = mock.selectedCourses.some(
+            (other) =>
+              other.id !== occupying.id &&
+              other.weekday === occupying.weekday &&
+              !(other.end < occupying.start || other.start > occupying.end) &&
+              (filterWeek === null || other.weekMask[filterWeek - 1] === "1"),
+          );
+          html += `
+            <button
+              class="course-block"
+              type="button"
+              style="grid-row: span ${span}; --block-bg:${blockColor(occupying.color).bg}; --block-line:${blockColor(occupying.color).border}; --block-accent:${blockColor(occupying.color).accent}"
+              data-selected-detail="${escapeHtml(occupying.id)}"
+              title="${escapeHtml(occupying.name)} · ${escapeHtml(occupying.teacher)} · ${escapeHtml(occupying.place)}"
+            >
+              <span class="course-block-name">${conflict ? ICONS.alert : ""}${escapeHtml(occupying.name)}</span>
+              <span class="course-block-meta">${escapeHtml(occupying.teacher)}</span>
+              <span class="course-block-meta">${escapeHtml(occupying.place)}</span>
+            </button>
+          `;
+        } else if (!occupying) {
+          html += '<div class="timetable-cell"></div>';
+        }
+      }
+    }
+    table.innerHTML = html;
+    $("[data-week-pill]").textContent = filterWeek === null ? "全部周次" : `第 ${filterWeek} 周`;
+    $("[data-week-summary]").textContent =
+      filterWeek === null ? `全部周次 · ${visibleCourses.length} 门课程` : `第 ${filterWeek} 周 · ${visibleCourses.length} 门课程`;
+
+    const unplaced = $("[data-unplaced]");
+    if (unplaced) {
+      unplaced.innerHTML = mock.unplacedCourses
+        .map(
+          (course) => `
+            <button class="unplaced-item" type="button" title="${escapeHtml(course.time)}">
+              ${ICONS.warning} ${escapeHtml(course.name)} · ${escapeHtml(course.teacher)}
+            </button>
+          `,
+        )
+        .join("");
+    }
+  }
+
+  function blockColor(color) {
+    const map = {
+      teal: { bg: "#e7f2ed", border: "#c8ded5", accent: "#438b76" },
+      amber: { bg: "#fbf1df", border: "#eeddbb", accent: "#bc8730" },
+      blue: { bg: "#eaf2f8", border: "#cedfe9", accent: "#527f9f" },
+      rose: { bg: "#f9eae7", border: "#ecd4cf", accent: "#b66b5c" },
+      violet: { bg: "#f1edf6", border: "#ddd5e8", accent: "#7e6b99" },
+      slate: { bg: "#edf0ef", border: "#d9dfdc", accent: "#687d73" },
+    };
+    return map[color] || map.teal;
+  }
+
+  function renderLogs() {
+    const list = $("[data-log-list]");
+    if (!list) return;
+    const groupFilter = $("[data-log-group]")?.value || "all";
+    const levelFilter = $("[data-log-level]")?.value || "all";
+    const filtered = state.logs.filter(
+      (entry) =>
+        (levelFilter === "all" || entry.level === levelFilter) &&
+        (groupFilter === "all" || entry.message.includes(groupFilter)),
+    );
+    list.innerHTML = filtered
+      .map(
+        (entry) => `
+          <div class="log-row ${entry.level.toLowerCase()}">
+            <span class="log-time">${escapeHtml(entry.time)}</span>
+            <span class="log-level">${escapeHtml(entry.level)}</span>
+            <span class="log-message">${escapeHtml(entry.message)}</span>
+          </div>
+        `,
+      )
+      .join("");
+    const count = $("[data-log-count]");
+    if (count) count.textContent = `${filtered.length} 条记录 · 2 个活跃任务`;
+    const latest = $("[data-log-latest]");
+    if (latest) latest.textContent = state.logs[0]?.message || "尚未收到新日志";
+    if (!state.logUserScrolled) {
+      requestAnimationFrame(() => {
+        list.scrollTop = list.scrollHeight;
+      });
+    }
+  }
+
+  function renderBatchSelect() {
+    const select = $("[data-batch-select]");
+    if (!select) return;
+    select.innerHTML = mock.batches.map((batch) => `<option>${escapeHtml(batch)}</option>`).join("");
+    select.value = mock.session.batch;
+  }
+
+  function renderWeekSelect() {
+    const select = $("[data-week-select]");
+    if (!select) return;
+    const options = ['<option value="all">全部周次</option>'];
+    for (let week = 1; week <= 20; week += 1) {
+      options.push(`<option value="${week}">第 ${week} 周</option>`);
+    }
+    select.innerHTML = options.join("");
+  }
+
+  function applySession() {
+    $$("[data-session]").forEach((node) => {
+      const key = node.dataset.session;
+      if (mock.session[key]) node.textContent = mock.session[key];
+    });
+  }
+
+  function switchPage(page) {
+    if (!["courses", "all-courses", "selected"].includes(page)) return;
+    state.page = page;
+    $$("[data-page]").forEach((button) => {
+      const active = button.dataset.page === page;
+      button.classList.toggle("active", active);
+      if (active) button.setAttribute("aria-current", "page");
+      else button.removeAttribute("aria-current");
+    });
+    $$("[data-page-panel]").forEach((panel) => panel.classList.toggle("active", panel.dataset.pagePanel === page));
+    const labels = { courses: "课程", "all-courses": "全校课程", selected: "已选课程" };
+    $("[data-breadcrumb]").textContent = labels[page];
+    if (page === "selected") renderTimetable();
+    if (page === "all-courses") {
+      renderAllCourses();
+      if (!state.allLoaded) loadAllCourses();
+    }
+  }
+
+  function showInfo(message, title = "操作已完成", duration = 5000) {
+    const bar = $("[data-info-bar]");
+    if (!bar) return;
+    $("[data-info-title]").textContent = title;
+    $("[data-info-message]").textContent = message;
+    bar.hidden = false;
+    clearTimeout(showInfo.timer);
+    showInfo.timer = window.setTimeout(() => {
+      bar.hidden = true;
+    }, duration);
+  }
+
+  function pushLog(message, level = "INFO") {
+    const now = new Date();
+    const time = now.toLocaleTimeString("zh-CN", { hour12: false });
+    state.logs.unshift({ time, level, message });
+    if (state.logs.length > 5000) state.logs.pop();
+    if (state.logOpen) renderLogs();
+    const latest = $("[data-log-latest]");
+    if (latest) latest.textContent = message;
+    if (level === "SUCCESS") {
+      showInfo(message, "检测到抢课成功", 5000);
+      playSuccessTone();
+    }
+  }
+
+  function playSuccessTone() {
+    if (state.muted) return;
+    try {
+      const audioContext = new AudioContext();
+      const oscillator = audioContext.createOscillator();
+      const gain = audioContext.createGain();
+      oscillator.type = "sine";
+      oscillator.frequency.setValueAtTime(660, audioContext.currentTime);
+      oscillator.frequency.exponentialRampToValueAtTime(980, audioContext.currentTime + 0.16);
+      gain.gain.setValueAtTime(0.0001, audioContext.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.09, audioContext.currentTime + 0.015);
+      gain.gain.exponentialRampToValueAtTime(0.0001, audioContext.currentTime + 0.3);
+      oscillator.connect(gain);
+      gain.connect(audioContext.destination);
+      oscillator.start();
+      oscillator.stop(audioContext.currentTime + 0.32);
+      oscillator.addEventListener("ended", () => audioContext.close());
+    } catch {
+      // 浏览器自动播放策略可能阻止提示音，不影响原型交互。
+    }
+  }
+
+  function toggleFilters(force) {
+    state.filtersOpen = typeof force === "boolean" ? force : !state.filtersOpen;
+    const panel = $("[data-filter-panel]");
+    const trigger = $('[data-action="toggle-filters"]');
+    panel.hidden = !state.filtersOpen;
+    trigger.setAttribute("aria-expanded", String(state.filtersOpen));
+    trigger.classList.toggle("active", state.filtersOpen);
+  }
+
+  function openDetail(course, source) {
+    state.currentDetail = { course, source };
+    const classNo = course.classNo || "已选";
+    const credits = course.credits || "—";
+    const hours = course.hours || "—";
+    const department = course.department || "—";
+    const classId = course.classId || course.id;
+    const capacity = course.capacity ? capacityLabel(course) : "—";
+    $("[data-detail-title]").textContent = course.name;
+    $("[data-detail-subtitle]").textContent = `${course.code || "已选课程"} · ${
+      course.classNo ? `课序号 ${course.classNo}` : "已选课程详情"
+    }`;
+    const conflict = course.conflict
+      ? `<div class="conflict-box">${ICONS.warning}<div><strong>检测到时间冲突</strong><br>请展开周课表核对与已选课程的重叠时段。</div></div>`
+      : "";
+    const schedule = course.weekday
+      ? `
+        <div class="mini-schedule">
+          <div class="mini-schedule-row"><span class="day">${escapeHtml(course.weekdayLabel)}</span><span>第 ${course.start}–${course.end} 节 · ${escapeHtml(course.weeks)} 周 · ${escapeHtml(course.place)}</span></div>
+        </div>
+      `
+      : `
+        <div class="mini-schedule">
+          <div class="mini-schedule-row"><span class="day">上课时间</span><span>${escapeHtml(course.time || "未提供")}</span></div>
+        </div>
+      `;
+    $("[data-detail-body]").innerHTML = `
+      <div class="drawer-status-row">
+        ${statusMarkup(course)}
+        <span class="status-chip neutral">${escapeHtml(course.campus || course.place || "校区未提供")}</span>
+        ${course.nature ? `<span class="status-chip neutral">${escapeHtml(course.nature)}</span>` : ""}
+      </div>
+      ${conflict}
+      <div class="detail-grid" style="margin-top:${conflict ? "16px" : "0"}">
+        <div class="detail-field"><div class="detail-label">教师</div><div class="detail-value">${escapeHtml(course.teacher)}</div></div>
+        <div class="detail-field"><div class="detail-label">教学班</div><div class="detail-value">${escapeHtml(classNo)}${course.classNo ? " 班" : ""}</div></div>
+        <div class="detail-field"><div class="detail-label">学分 / 学时</div><div class="detail-value">${escapeHtml(credits)} / ${escapeHtml(hours)}</div></div>
+        <div class="detail-field"><div class="detail-label">容量</div><div class="detail-value">${escapeHtml(capacity)}</div></div>
+        <div class="detail-field wide"><div class="detail-label">开课单位</div><div class="detail-value">${escapeHtml(department)}</div></div>
+        <div class="detail-field wide"><div class="detail-label">教学班 ID</div><div class="detail-value mono">${escapeHtml(classId)}</div></div>
+      </div>
+      <div class="detail-section">
+        <h3 class="detail-section-title">上课安排</h3>
+        ${schedule}
+      </div>
+      <div class="detail-section">
+        <h3 class="detail-section-title">任务建议</h3>
+        <div class="mini-schedule">
+          <div class="mini-schedule-row"><span class="day">首选</span><span>${escapeHtml(classNo)}${course.classNo ? " 班" : ""} · ${escapeHtml(course.teacher)}</span></div>
+          <div class="mini-schedule-row"><span class="day">备选</span><span>加入同课程的其他教学班后，会按加入顺序自动接替。</span></div>
+        </div>
+      </div>
+    `;
+    $("[data-detail-scrim]").hidden = false;
+    $("[data-detail-footer]").hidden = source === "selected";
+    $("[data-detail-footer]").classList.toggle("is-readonly", source === "selected");
+    const drawer = $("[data-detail-drawer]");
+    drawer.classList.add("is-open");
+    drawer.setAttribute("aria-hidden", "false");
+  }
+
+  function closeDetail() {
+    $("[data-detail-scrim]").hidden = true;
+    const footer = $("[data-detail-footer]");
+    if (footer) {
+      footer.hidden = false;
+      footer.classList.remove("is-readonly");
+    }
+    const drawer = $("[data-detail-drawer]");
+    drawer.classList.remove("is-open");
+    drawer.setAttribute("aria-hidden", "true");
+    state.currentDetail = null;
+  }
+
+  function addCourseDirectly(course) {
+    let group = state.groups.find((item) => item.code === course.code);
+    if (!group) {
+      group = {
+        id: `group-${course.code.toLowerCase()}`,
+        code: course.code,
+        name: course.name,
+        state: "waiting",
+        tasks: [],
+      };
+      state.groups.push(group);
+    }
+    if (group.tasks.some((task) => task.classId === course.classId)) {
+      openDuplicateModal("course-duplicate", [{ course, group }]);
+      return;
+    }
+    group.tasks.push({
+      id: `task-${course.classId}`,
+      classId: course.classId,
+      classNo: course.classNo,
+      teacher: course.teacher,
+      campus: course.campus,
+      time: course.time,
+      state: "standby",
+      attempts: 0,
+      selected: course.selected,
+      capacity: course.capacity,
+    });
+    renderCourses();
+    renderGroups();
+    showInfo(`“${course.name}” ${course.classNo} 班已加入抢课队列，未自动开始。`, "已加入");
+    pushLog(`[课程页] 加入 ${course.name} ${course.classNo} 班，课程组待开始`, "INFO");
+    const newest = $("[data-group-list]").lastElementChild;
+    newest?.classList.add("is-new");
+    newest?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+
+  function removeCourseFromQueue(course) {
+    const group = state.groups.find((item) => item.code === course.code);
+    if (!group) return;
+    group.tasks = group.tasks.filter((task) => task.classId !== course.classId);
+    if (!group.tasks.length) {
+      state.groups = state.groups.filter((item) => item.id !== group.id);
+    }
+    renderCourses();
+    renderGroups();
+    showInfo(`“${course.name}” ${course.classNo} 班已取消加入。`, "已取消");
+    pushLog(`[课程页] 取消加入 ${course.name} ${course.classNo} 班`, "INFO");
+  }
+
+  function addAllBasket() {
+    if (!state.basket.length) return;
+    const courses = state.basket.map((id) => allCourseById.get(id)).filter(Boolean);
+    const groupMap = new Map(state.groups.map((group) => [group.code, group]));
+    let added = 0;
+    const duplicates = [];
+    courses.forEach((course) => {
+      let group = groupMap.get(course.code);
+      if (!group) {
+        group = {
+          id: `group-${course.code.toLowerCase()}`,
+          code: course.code,
+          name: course.name,
+          state: "waiting",
+          tasks: [],
+        };
+        state.groups.push(group);
+        groupMap.set(course.code, group);
+      }
+      if (!group.tasks.some((task) => task.classId === course.classId)) {
+        group.tasks.push({
+          id: `task-${course.classId}`,
+          classId: course.classId,
+          classNo: course.classNo,
+          teacher: course.teacher,
+          campus: course.campus,
+          time: course.time,
+          state: "standby",
+          attempts: 0,
+          selected: course.selected,
+          capacity: course.capacity,
+        });
+        added += 1;
+      } else {
+        duplicates.push({ course, group });
+      }
+    });
+    state.basket = [];
+    renderBasket();
+    renderAllCourses();
+    renderGroups();
+    showInfo(`已创建 ${groupMap.size} 个课程组，共 ${added} 个教学班。`, "已加入抢课队列");
+    pushLog(`[全校课程] 批量加入 ${added} 个教学班`, "INFO");
+    if (duplicates.length) openDuplicateModal("basket-duplicate", duplicates);
+  }
+
+  function openDuplicateModal(action, duplicates = null) {
+    state.activeModalAction = action;
+    state.pendingDuplicates = duplicates || [];
+    if (duplicates?.length) {
+      restoreDuplicateModalDefaults();
+      const first = duplicates[0];
+      $("[data-modal-title]").textContent = "该教学班已在课程组中";
+      $("[data-modal-copy]").textContent =
+        duplicates.length > 1
+          ? `有 ${duplicates.length} 个教学班已在组内。可以全部忽略，或把已有实例移动到组内末尾。`
+          : "课程组内每个教学班只保留一个实例，可以选择忽略，或把已有实例移到备选末尾。";
+      $("[data-modal-note]").textContent = `${first.course.name} · ${first.course.classNo} 班 · ${first.course.teacher}`;
+      $('[data-action="modal-ignore"]').textContent = "忽略重复";
+      $('[data-action="modal-move"]').textContent = "移到末尾";
+    }
+    $("[data-modal-scrim]").hidden = false;
+    $("[data-modal]").hidden = false;
+    $('[data-action="modal-ignore"]').focus();
+  }
+
+  function closeModal() {
+    $("[data-modal-scrim]").hidden = true;
+    $("[data-modal]").hidden = true;
+    state.activeModalAction = null;
+    state.pendingDuplicates = [];
+  }
+
+  function setSchedule() {
+    const dateValue = $("[data-schedule-date]")?.value;
+    const timeValue = $("[data-schedule-time]")?.value;
+    if (!dateValue || !timeValue) {
+      showInfo("请先填写定时日期和时间。", "时间未设置");
+      return;
+    }
+    const target = new Date(`${dateValue}T${timeValue}`);
+    if (Number.isNaN(target.getTime())) {
+      showInfo("定时时间格式无效。", "无法设置定时");
+      return;
+    }
+    if (target.getTime() < Date.now()) {
+      showInfo("已错过设定时间，将按规则立即启动所有待开始课程组。", "定时已过期");
+    }
+    state.schedule = target;
+    const trigger = $('[data-action="toggle-schedule"]');
+    trigger.setAttribute("aria-checked", "true");
+    startCountdown();
+    pushLog(`[全局定时] 已设置为 ${target.toLocaleString("zh-CN", { hour12: false })}`, "INFO");
+  }
+
+  function startCountdown() {
+    clearInterval(state.countdownTimer);
+    const tick = () => {
+      const label = $("[data-countdown]");
+      if (!label) return;
+      if (!state.schedule) {
+        label.textContent = "未设置";
+        clearInterval(state.countdownTimer);
+        return;
+      }
+      const diff = state.schedule.getTime() - Date.now();
+      if (diff <= 0) {
+        label.textContent = "即将启动";
+        triggerScheduledStart();
+        return;
+      }
+      const hours = Math.floor(diff / 3600000);
+      const minutes = Math.floor((diff % 3600000) / 60000);
+      const seconds = Math.floor((diff % 60000) / 1000);
+      label.textContent = `距开始 ${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+    };
+    tick();
+    state.countdownTimer = window.setInterval(tick, 1000);
+  }
+
+  function triggerScheduledStart() {
+    if (!state.schedule) return;
+    clearInterval(state.countdownTimer);
+    state.schedule = null;
+    $('[data-action="toggle-schedule"]').setAttribute("aria-checked", "false");
+    $("[data-countdown]").textContent = "定时已触发";
+    state.groups.forEach((group) => {
+      if (group.state === "success") return;
+      group.state = "running";
+      group.tasks.forEach((task, index) => {
+        task.state = index === 0 ? "active" : "standby";
+      });
+    });
+    renderGroups();
+    showInfo("全局定时已到，已从首选重新启动所有未成功课程组。", "定时启动", 5000);
+    pushLog("[全局定时] 定时触发，所有课程组已按首选重新启动", "INFO");
+    playSuccessTone();
+  }
+
+  function openColumnMenu(anchor) {
+    const menu = document.createElement("div");
+    menu.className = "menu-popover column-menu";
+    menu.innerHTML = `
+      <div style="padding:4px 7px 7px;color:var(--faint);font-size:8px;font-weight:700;letter-spacing:.08em">显示列</div>
+      ${["capacity", "teacher", "time", "status"].map((column) => `
+        <label class="column-option">
+          <input class="checkbox" type="checkbox" checked data-column-toggle="${column}" />
+          ${{ capacity: "余量", teacher: "教师", time: "时间地点", status: "状态" }[column]}
+        </label>
+      `).join("")}
+    `;
+    positionMenu(menu, anchor);
+    $$("[data-column-toggle]", menu).forEach((input) => {
+      input.addEventListener("change", () => {
+        const column = input.dataset.columnToggle;
+        $$(`[data-column="${column}"], [data-column-body="${column}"]`).forEach((node) => {
+          node.hidden = !input.checked;
+        });
+      });
+    });
+  }
+
+  function openCourseMenu(anchor, course) {
+    const menu = document.createElement("div");
+    menu.className = "menu-popover";
+    menu.innerHTML = `
+      <button class="menu-item" type="button" data-menu-detail>${ICONS.book} 查看详情</button>
+      <button class="menu-item" type="button" data-menu-add>${ICONS.plus} 加入抢课队列</button>
+      <div class="menu-separator"></div>
+      <button class="menu-item danger" type="button" data-menu-remove>${ICONS.x} 从当前选择移除</button>
+    `;
+    positionMenu(menu, anchor);
+    $("[data-menu-detail]", menu).addEventListener("click", () => {
+      closePopover();
+      openDetail(course);
+    });
+    $("[data-menu-add]", menu).addEventListener("click", () => {
+      addCourseDirectly(course);
+      closePopover();
+    });
+    $("[data-menu-remove]", menu).addEventListener("click", () => {
+      removeCourseFromQueue(course);
+      closePopover();
+    });
+  }
+
+  function openTaskMenu(anchor, group, task) {
+    const menu = document.createElement("div");
+    menu.className = "menu-popover";
+    menu.innerHTML = `
+      <button class="menu-item" type="button" data-menu-stop>${ICONS.stop} 停止此教学班</button>
+      <button class="menu-item" type="button" data-menu-move ${group.state === "running" ? "disabled title=\"运行中不可调整顺序\"" : ""}>${ICONS.clock} 移到组内末尾</button>
+      <div class="menu-separator"></div>
+      <button class="menu-item danger" type="button" data-menu-delete>${ICONS.x} 移除任务</button>
+    `;
+    positionMenu(menu, anchor);
+    $("[data-menu-stop]", menu).addEventListener("click", () => {
+      task.state = "paused";
+      renderGroups();
+      closePopover();
+    });
+    $("[data-menu-move]", menu).addEventListener("click", () => {
+      if (group.state === "running") {
+        showInfo("整组运行中不能调整首选/备选顺序，请先停止该课程组。", "顺序已锁定");
+        return;
+      }
+      group.tasks = group.tasks.filter((item) => item.id !== task.id).concat(task);
+      renderGroups();
+      closePopover();
+      showInfo("已将该任务移到组内末尾。", "顺序已调整");
+    });
+    $("[data-menu-delete]", menu).addEventListener("click", () => {
+      group.tasks = group.tasks.filter((item) => item.id !== task.id);
+      if (!group.tasks.length) state.groups = state.groups.filter((item) => item.id !== group.id);
+      renderCourses();
+      renderGroups();
+      closePopover();
+      showInfo("教学班已从抢课队列移除。", "已移除");
+    });
+  }
+
+  function openGroupMenu(anchor, group) {
+    const menu = document.createElement("div");
+    menu.className = "menu-popover";
+    menu.innerHTML = `
+      <button class="menu-item" type="button" data-menu-detail>${ICONS.book} 查看课程组详情</button>
+      <button class="menu-item" type="button" data-menu-reset>${ICONS.clock} 重置为待开始</button>
+      <div class="menu-separator"></div>
+      <button class="menu-item danger" type="button" data-menu-delete>${ICONS.x} 删除课程组</button>
+    `;
+    positionMenu(menu, anchor);
+    $("[data-menu-detail]", menu).addEventListener("click", () => {
+      closePopover();
+      showInfo(`${group.name} · ${group.tasks.length} 个教学班`, "课程组详情");
+    });
+    $("[data-menu-reset]", menu).addEventListener("click", () => {
+      group.state = "waiting";
+      group.tasks.forEach((task) => {
+        task.state = "standby";
+      });
+      renderGroups();
+      closePopover();
+    });
+    $("[data-menu-delete]", menu).addEventListener("click", () => {
+      state.groups = state.groups.filter((item) => item.id !== group.id);
+      closePopover();
+      renderCourses();
+      renderGroups();
+      updateQueueToggle();
+      showInfo("课程组已删除。", "已删除");
+    });
+  }
+
+  function positionMenu(menu, anchor) {
+    closePopover();
+    $("[data-menu-root]").appendChild(menu);
+    const rect = anchor.getBoundingClientRect();
+    const top = Math.min(window.innerHeight - menu.offsetHeight - 10, rect.bottom + 4);
+    const left = Math.min(window.innerWidth - menu.offsetWidth - 10, rect.right - menu.offsetWidth);
+    menu.style.top = `${Math.max(10, top)}px`;
+    menu.style.left = `${Math.max(10, left)}px`;
+    setTimeout(() => {
+      document.addEventListener("click", closePopoverOnce);
+    }, 0);
+  }
+
+  function closePopoverOnce(event) {
+    if (!$("[data-menu-root]")?.contains(event.target)) closePopover();
+  }
+
+  function closePopover() {
+    $("[data-menu-root]").innerHTML = "";
+    document.removeEventListener("click", closePopoverOnce);
+  }
+
+  function toggleSchedule(force) {
+    const trigger = $('[data-action="toggle-schedule"]');
+    const enabled =
+      typeof force === "boolean"
+        ? force
+        : trigger.getAttribute("aria-checked") !== "true";
+    trigger.setAttribute("aria-checked", String(enabled));
+    if (enabled) {
+      setSchedule();
+    } else {
+      state.schedule = null;
+      clearInterval(state.countdownTimer);
+      $("[data-countdown]").textContent = "未启用";
+      showInfo("全局定时已取消。", "定时已关闭");
+    }
+  }
+
+  function toggleLog(force) {
+    state.logOpen = typeof force === "boolean" ? force : !state.logOpen;
+    const dock = $("[data-log-dock]");
+    dock.classList.toggle("is-open", state.logOpen);
+    $("[data-log-toggle]").setAttribute("aria-expanded", String(state.logOpen));
+    if (state.logOpen) renderLogs();
+  }
+
+  function setupEvents() {
+    $$("[data-page]").forEach((button) => {
+      button.addEventListener("click", () => switchPage(button.dataset.page));
+    });
+    $("[data-course-body]").addEventListener("click", (event) => {
+      const addButton = event.target.closest("[data-course-add]");
+      if (addButton) {
+        const course = courseById.get(addButton.dataset.courseAdd);
+        if (course) {
+          if (addButton.classList.contains("is-added")) removeCourseFromQueue(course);
+          else addCourseDirectly(course);
+        }
+        return;
+      }
+      const detailButton = event.target.closest("[data-detail-course]");
+      if (detailButton) {
+        openDetail(courseById.get(detailButton.dataset.detailCourse));
+        return;
+      }
+      const menuButton = event.target.closest("[data-course-menu]");
+      if (menuButton) {
+        openCourseMenu(menuButton, courseById.get(menuButton.dataset.courseMenu));
+        return;
+      }
+      if (event.target.closest(".course-name-button")) return;
+    });
+    $("[data-course-search]").addEventListener("input", () => {
+      updateSearchClear();
+      applyCourseFilters();
+    });
+    $("[data-course-search]").addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        applyLocalSearch();
+      }
+    });
+    $$("[data-filter], [data-param]").forEach((control) => {
+      if (control.matches(".switch")) {
+        control.addEventListener("click", () => {
+          const checked = control.getAttribute("aria-checked") === "true";
+          control.setAttribute("aria-checked", String(!checked));
+          if (control.dataset.filter) {
+            state.localFilters[control.dataset.filter] = !checked;
+            applyCourseFilters();
+          }
+          if (control.dataset.param === "auto-stop") {
+            showInfo(!checked ? "抢到后自动停止本组其他任务。" : "抢到后继续运行，直到手动停止。", "抢到即停已切换");
+          }
+        });
+      }
+    });
+    $("[data-campus-filter]").addEventListener("change", applyCourseFilters);
+    $('[data-param="threads"]').addEventListener("input", updateThreadLoad);
+    $('[data-param="threads"]').addEventListener("blur", updateThreadLoad);
+    $$(".type-tab").forEach((tab) => {
+      tab.addEventListener("click", () => {
+        $$(".type-tab").forEach((item) => {
+          item.classList.toggle("active", item === tab);
+          item.setAttribute("aria-selected", String(item === tab));
+        });
+        showInfo(`已切换到“${tab.textContent}”课程类型；课程表会重新查询。`, "课程类型已切换");
+      });
+    });
+    $$("[data-action]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const action = button.dataset.action;
+        if (action === "toggle-filters") toggleFilters();
+        if (action === "clear-search") {
+          $("[data-course-search]").value = "";
+          updateSearchClear();
+          applyLocalSearch();
+        }
+        if (action === "focus-course-search") {
+          $("[data-course-search]").focus();
+        }
+        if (action === "refresh-courses") {
+          animateTopProgress();
+          showInfo("课程数据已刷新；任务队列保持不变。", "刷新完成");
+          pushLog("[课程页] 手动刷新课程列表，任务队列保留", "INFO");
+        }
+        if (action === "column-menu") openColumnMenu(button);
+        if (action === "all-batch-add") addAllBasket();
+        if (action === "load-all") loadAllCourses();
+        if (action === "select-visible") {
+          if (!state.allLoaded) {
+            showInfo("请先加载全校课程。", "暂无可选课程");
+            return;
+          }
+          mock.allCourses.forEach((course) => {
+            if (!state.basket.includes(course.id)) state.basket.push(course.id);
+          });
+          renderAllCourses();
+          renderBasket();
+        }
+        if (action === "refresh-selected") {
+          showInfo("已刷新已选课程和课表。", "刷新完成");
+          pushLog("[已选课程] 手动刷新课程与课表", "INFO");
+        }
+        if (action === "toggle-schedule") toggleSchedule();
+        if (action === "toggle-all") {
+          if (!state.groups.length) {
+            showInfo("请先从左侧选择课程并加入抢课队列。", "请先选择课程");
+            pushLog("[课程组] 开始全部被阻止：抢课队列为空", "WARN");
+            return;
+          }
+          const hasRunning = state.groups.some((group) => group.state === "running");
+          state.groups.forEach((group) => {
+            if (group.state === "success") return;
+            if (hasRunning) {
+              group.state = "paused";
+              group.tasks.forEach((task) => {
+                task.state = "paused";
+              });
+            } else {
+              group.state = "running";
+              group.tasks.forEach((task, index) => {
+                task.state = index === 0 ? "active" : "standby";
+              });
+            }
+          });
+          renderGroups();
+          showInfo(
+            hasRunning ? "所有运行中课程组已暂停。" : "所有未成功课程组已从首选开始。",
+            hasRunning ? "已全部停止" : "已全部开始",
+          );
+          pushLog(hasRunning ? "[课程组] 全部停止" : "[课程组] 全部开始", "INFO");
+        }
+        if (action === "mute") {
+          state.muted = !state.muted;
+          button.classList.toggle("is-muted", state.muted);
+          button.setAttribute("aria-pressed", String(state.muted));
+          button.setAttribute("aria-label", state.muted ? "开启提示音" : "静音提示音");
+          showInfo(state.muted ? "当前会话已静音提示音。" : "提示音已恢复。", state.muted ? "静音" : "提示音");
+        }
+        if (action === "help") {
+          showInfo("原型阶段使用占位数据；正式版会提供登录、查课、抢课与课表操作。", "帮助");
+        }
+        if (action === "logout") openLogoutModal();
+        if (action === "close-info") $("[data-info-bar]").hidden = true;
+        if (action === "close-detail") closeDetail();
+        if (action === "detail-add") {
+          if (state.currentDetail) {
+            const course = state.currentDetail.course;
+            addCourseDirectly(course);
+            closeDetail();
+            switchPage("courses");
+          }
+        }
+        if (action === "modal-ignore") {
+          closeModal();
+          showInfo("已忽略重复教学班。", "未创建新任务");
+        }
+        if (action === "modal-move") {
+          if (state.activeModalAction === "logout") {
+            closeModal();
+            showInfo("已清理演示任务并准备返回登录页。", "已退出登录");
+            setTimeout(() => {
+              window.location.href = "login.html";
+            }, 650);
+            return;
+          }
+          (state.pendingDuplicates || []).forEach(({ course, group }) => {
+            const task = group.tasks.find((item) => item.classId === course.classId);
+            if (task) {
+              group.tasks = group.tasks.filter((item) => item.id !== task.id).concat(task);
+            }
+          });
+          closeModal();
+          renderGroups();
+          showInfo("已将已有实例移到组内末尾。", "顺序已调整");
+        }
+        if (action === "modal-cancel") {
+          if (state.activeModalAction === "logout") {
+            closeModal();
+            showInfo("原型保持当前演示会话；正式版本会返回登录弹窗。", "已取消退出");
+          } else {
+            closeModal();
+          }
+        }
+        if (action === "log-bottom") {
+          const list = $("[data-log-list]");
+          state.logUserScrolled = false;
+          list.scrollTop = list.scrollHeight;
+          $("[data-action='log-bottom']").hidden = true;
+        }
+        if (action === "export-log") {
+          const blob = new Blob(
+            [state.logs.map((entry) => `${entry.time}\t${entry.level}\t${entry.message}`).join("\n")],
+            { type: "text/plain;charset=utf-8" },
+          );
+          const link = document.createElement("a");
+          link.href = URL.createObjectURL(blob);
+          link.download = "抢课日志_原型.txt";
+          link.click();
+          URL.revokeObjectURL(link.href);
+          showInfo("已导出当前筛选结果。", "日志导出");
+        }
+        if (action === "clear-log") {
+          state.logs = [];
+          state.logUserScrolled = false;
+          renderLogs();
+          showInfo("本次会话日志已清空。", "日志清空");
+        }
+      });
+    });
+    $$("[data-group-list]").forEach((list) => {
+      list.addEventListener("click", (event) => {
+        const collapse = event.target.closest("[data-group-collapse]");
+        if (collapse) {
+          const group = state.groups.find((item) => item.id === collapse.dataset.groupCollapse);
+          if (group) {
+            group.collapsed = !group.collapsed;
+            renderGroups();
+          }
+          return;
+        }
+        const start = event.target.closest("[data-group-start]");
+        if (start) {
+          const group = state.groups.find((item) => item.id === start.dataset.groupStart);
+          if (!group) return;
+          group.state = "running";
+          group.tasks.forEach((task, index) => {
+            task.state = index === 0 ? "active" : "standby";
+          });
+          renderGroups();
+          return;
+        }
+        const pause = event.target.closest("[data-group-pause]");
+        if (pause) {
+          const group = state.groups.find((item) => item.id === pause.dataset.groupPause);
+          if (!group) return;
+          group.state = "paused";
+          group.tasks.forEach((task) => {
+            task.state = "paused";
+          });
+          renderGroups();
+          return;
+        }
+        const stop = event.target.closest("[data-group-stop]");
+        if (stop) {
+          const group = state.groups.find((item) => item.id === stop.dataset.groupStop);
+          if (!group) return;
+          group.state = "paused";
+          group.tasks.forEach((task) => {
+            task.state = "paused";
+          });
+          renderGroups();
+          return;
+        }
+        const taskMenu = event.target.closest("[data-task-menu]");
+        if (taskMenu) {
+          const task = state.groups
+            .flatMap((group) => group.tasks.map((task) => ({ group, task })))
+            .find((item) => item.task.id === taskMenu.dataset.taskMenu);
+          if (task) openTaskMenu(taskMenu, task.group, task.task);
+          return;
+        }
+        const groupMenu = event.target.closest("[data-group-menu]");
+        if (groupMenu) {
+          const group = state.groups.find((item) => item.id === groupMenu.dataset.groupMenu);
+          if (group) openGroupMenu(groupMenu, group);
+        }
+      });
+    });
+    $$("[data-all-body]").forEach((body) => {
+      body.addEventListener("change", (event) => {
+        if (!event.target.matches("[data-all-check]")) return;
+        const row = event.target.closest("tr[data-all-id]");
+        const id = row?.dataset.allId;
+        if (!id) return;
+        if (event.target.checked) {
+          if (!state.basket.includes(id)) state.basket.push(id);
+        } else {
+          state.basket = state.basket.filter((item) => item !== id);
+        }
+        renderAllCourses();
+        renderBasket();
+      });
+      body.addEventListener("click", (event) => {
+        const detailButton = event.target.closest("[data-detail-all]");
+        if (detailButton) openDetail(allCourseById.get(detailButton.dataset.detailAll), "all");
+      });
+    });
+    $("[data-all-select-all]").addEventListener("change", (event) => {
+      if (!state.allLoaded) {
+        event.target.checked = false;
+        showInfo("请先加载全校课程。", "暂无可选课程");
+        return;
+      }
+      state.basket = event.target.checked ? mock.allCourses.map((course) => course.id) : [];
+      renderAllCourses();
+      renderBasket();
+    });
+    $("[data-all-search]").addEventListener("input", renderAllCourses);
+    $("[data-all-campus]").addEventListener("change", renderAllCourses);
+    $("[data-basket-list]").addEventListener("click", (event) => {
+      const remove = event.target.closest("[data-basket-remove]");
+      if (!remove) return;
+      state.basket = state.basket.filter((id) => id !== remove.dataset.basketRemove);
+      renderBasket();
+      renderAllCourses();
+    });
+    $("[data-batch-select]").addEventListener("change", (event) => {
+      showInfo(`已切换到“${event.target.value}”；原型不会重新加载真实课程。`, "批次切换");
+    });
+    $("[data-group-list]").addEventListener("dragstart", (event) => {
+      const task = event.target.closest("[data-task-id]");
+      if (!task) return;
+      const group = state.groups.find((item) => item.id === task.dataset.groupId);
+      if (group?.state === "running") {
+        event.preventDefault();
+        showInfo("整组运行中不能调整首选/备选顺序，请先停止该课程组。", "顺序已锁定");
+        return;
+      }
+      state.draggedTask = task;
+      event.dataTransfer.effectAllowed = "move";
+      event.dataTransfer.setData("text/plain", task.dataset.taskId);
+      task.classList.add("is-dragging");
+    });
+    $("[data-group-list]").addEventListener("dragend", () => {
+      state.draggedTask?.classList.remove("is-dragging");
+      state.draggedTask = null;
+    });
+    $("[data-group-list]").addEventListener("dragover", (event) => {
+      const target = event.target.closest("[data-task-id]");
+      if (!target || target === state.draggedTask) return;
+      event.preventDefault();
+      event.dataTransfer.dropEffect = "move";
+      target.style.borderColor = "var(--teal)";
+    });
+    $("[data-group-list]").addEventListener("dragleave", (event) => {
+      const target = event.target.closest("[data-task-id]");
+      if (target) target.style.borderColor = "";
+    });
+    $("[data-group-list]").addEventListener("drop", (event) => {
+      const target = event.target.closest("[data-task-id]");
+      if (!target || !state.draggedTask) return;
+      const groupId = target.dataset.groupId;
+      if (groupId !== state.draggedTask.dataset.groupId) {
+        showInfo("只允许在同一课程组内调整首选和备选顺序。", "未移动");
+        target.style.borderColor = "";
+        return;
+      }
+      event.preventDefault();
+      target.style.borderColor = "";
+      const group = state.groups.find((item) => item.id === groupId);
+      if (!group) return;
+      const draggedId = state.draggedTask.dataset.taskId;
+      const targetId = target.dataset.taskId;
+      const tasks = [...group.tasks];
+      const draggedIndex = tasks.findIndex((task) => task.id === draggedId);
+      const targetIndex = tasks.findIndex((task) => task.id === targetId);
+      const [dragged] = tasks.splice(draggedIndex, 1);
+      tasks.splice(targetIndex, 0, dragged);
+      group.tasks = tasks;
+      renderGroups();
+      showInfo("组内顺序已调整，首选与备选会按新顺序生效。", "顺序已保存");
+    });
+    $("[data-log-toggle]").addEventListener("click", () => toggleLog());
+    $("[data-log-toggle]").addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") toggleLog();
+    });
+    $("[data-log-level]").addEventListener("change", renderLogs);
+    $("[data-log-group]").addEventListener("change", renderLogs);
+    $("[data-log-list]").addEventListener("scroll", () => {
+      const list = $("[data-log-list]");
+      const atBottom = list.scrollHeight - list.scrollTop - list.clientHeight < 16;
+      state.logUserScrolled = !atBottom;
+      $("[data-action='log-bottom']").hidden = atBottom;
+    });
+    $("[data-detail-scrim]").addEventListener("click", closeDetail);
+    $("[data-modal-scrim]").addEventListener("click", closeModal);
+    $("[data-drop-history] .drop-history-head").addEventListener("click", () => {
+      const history = $("[data-drop-history]");
+      const body = $("[data-drop-body]");
+      const open = history.classList.toggle("is-open");
+      body.hidden = !open;
+      $(".drop-history-head", history).setAttribute("aria-expanded", String(open));
+    });
+    $("[data-drop-history] .drop-history-head").addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        $("[data-drop-history] .drop-history-head").click();
+      }
+    });
+    $("[data-week-select]").addEventListener("change", (event) => {
+      state.selectedWeek = event.target.value;
+      renderTimetable();
+    });
+    document.querySelectorAll("[data-selected-body]").forEach((body) => {
+      body.addEventListener("click", (event) => {
+        const target = event.target.closest("[data-selected-detail]");
+        if (target) openDetail(mock.selectedCourses.find((course) => course.id === target.dataset.selectedDetail), "selected");
+      });
+    });
+    $("[data-timetable]").addEventListener("click", (event) => {
+      const block = event.target.closest("[data-selected-detail]");
+      if (block) openDetail(mock.selectedCourses.find((course) => course.id === block.dataset.selectedDetail), "selected");
+    });
+    window.addEventListener("keydown", (event) => {
+      if (event.key !== "Escape") return;
+      if (!state.muted && state.logOpen) toggleLog(false);
+      else if ($("[data-detail-drawer]").getAttribute("aria-hidden") === "false") closeDetail();
+      else if (!$("[data-modal]").hidden) closeModal();
+    });
+  }
+
+  function updateSearchClear() {
+    const input = $("[data-course-search]");
+    const clear = $('[data-action="clear-search"]');
+    if (input && clear) clear.hidden = !input.value;
+  }
+
+  function applyLocalSearch() {
+    applyCourseFilters();
+  }
+
+  function applyCourseFilters() {
+    const keyword = ($("[data-course-search]")?.value || "").trim().toLowerCase();
+    const campus = $("[data-campus-filter]")?.value || "";
+    $$("[data-course-body] tr").forEach((row) => {
+      const id = row.dataset.courseId;
+      const course = courseById.get(id);
+      if (!course) return;
+      const matchesKeyword =
+        !keyword ||
+        `${course.name} ${course.teacher} ${course.code} ${course.classNo}`.toLowerCase().includes(keyword);
+      const matchesCampus = !campus || course.campus === campus;
+      const matchesAvailable = !state.localFilters.available || course.selected < course.capacity;
+      const matchesConflict = !state.localFilters.conflict || course.conflict;
+      row.hidden = !(matchesKeyword && matchesCampus && matchesAvailable && matchesConflict);
+    });
+  }
+
+  function loadAllCourses() {
+    if (state.allLoading) return;
+    state.allLoading = true;
+    state.allLoaded = false;
+    const progress = $("[data-all-progress]");
+    if (!progress) {
+      state.allLoading = false;
+      return;
+    }
+    const bar = $(".load-progress-bar span", progress);
+    progress.querySelector("span:last-child").textContent = "正在加载 0 / 4455";
+    let value = 0;
+    const timer = window.setInterval(() => {
+      value += 20;
+      bar.style.width = `${Math.min(100, value)}%`;
+      progress.querySelector("span:last-child").textContent = `正在加载 ${Math.min(4455, Math.round(4455 * value / 100))} / 4455`;
+      if (value >= 100) {
+        clearInterval(timer);
+        state.allLoaded = true;
+        state.allLoading = false;
+        progress.querySelector("span:last-child").textContent = "已加载 4455 条 · 本地筛选";
+        renderAllCourses();
+        showInfo("全部课程已加载，之后输入关键词只在本地过滤。", "加载完成");
+        pushLog("[全校课程] 已加载 4455 条记录，切换为本地筛选", "INFO");
+      }
+    }, 120);
+  }
+
+  function animateTopProgress() {
+    const bar = $("[data-top-progress]");
+    if (!bar) return;
+    bar.style.width = "18%";
+    setTimeout(() => (bar.style.width = "62%"), 80);
+    setTimeout(() => (bar.style.width = "100%"), 240);
+    setTimeout(() => {
+      bar.style.width = "0";
+    }, 560);
+  }
+
+  function openLogoutModal() {
+    $("[data-modal-title]").textContent = "退出当前账号？";
+    $("[data-modal-copy]").textContent = "运行中或已定时的任务会先停止，确认后将清空本会话的课程与任务。";
+    $("[data-modal-note]").textContent = "正式版本会重新显示登录弹窗，不会保存登录 token。";
+    $('[data-action="modal-cancel"]').textContent = "取消";
+    $('[data-action="modal-ignore"]').hidden = true;
+    $('[data-action="modal-move"]').textContent = "先停止并退出";
+    openDuplicateModal("logout");
+  }
+
+  function restoreDuplicateModalDefaults() {
+    $('[data-action="modal-ignore"]').hidden = false;
+    $('[data-action="modal-cancel"]').textContent = "取消";
+    $('[data-action="modal-ignore"]').textContent = "忽略重复";
+    $('[data-action="modal-move"]').textContent = "移到末尾";
+  }
+
+  function populateLogGroupFilter() {
+    const select = $("[data-log-group]");
+    if (!select) return;
+    const current = select.value;
+    select.innerHTML = [
+      '<option value="all">全部课程组</option>',
+      ...mock.groups.map((group) => `<option value="${escapeHtml(group.name)}">${escapeHtml(group.name)}</option>`),
+    ].join("");
+    select.value = [...select.options].some((option) => option.value === current) ? current : "all";
+  }
+
+  function init() {
+    applySession();
+    renderBatchSelect();
+    renderCourses();
+    renderAllCourses();
+    renderBasket();
+    renderGroups();
+    renderSelected();
+    renderWeekSelect();
+    renderTimetable();
+    renderLogs();
+    setupEvents();
+    populateLogGroupFilter();
+    state.allLoading = false;
+    const requestedPage = new URLSearchParams(window.location.search).get("page");
+    switchPage(["courses", "all-courses", "selected"].includes(requestedPage) ? requestedPage : "courses");
+    const dateInput = $("[data-schedule-date]");
+    const timeInput = $("[data-schedule-time]");
+    if (dateInput && timeInput) {
+      const next = new Date(Date.now() + 10 * 60 * 1000);
+      next.setSeconds(0, 0);
+      const datePart = new Date(next.getTime() - next.getTimezoneOffset() * 60000)
+        .toISOString()
+        .slice(0, 10);
+      const timePart = next.toTimeString().slice(0, 8);
+      dateInput.value = datePart;
+      timeInput.value = timePart;
+    }
+  }
+
+  init();
+})();
+
+</script>
+</body>
+</html>
+

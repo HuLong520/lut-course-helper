@@ -4,22 +4,24 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "luthelper"
-version = "0.2.0"
+version = "0.3.0"
 description = "兰州理工大学抢课助手"
 readme = "README.md"
 requires-python = ">=3.12,<3.13"
 license = { text = "GPL-3.0-only" }
 dependencies = [
-  "PySide6==6.12.0",
-  "PySide6-Fluent-Widgets==1.11.3",
+  "requests>=2.32,<3.0",
+  "beautifulsoup4>=4.14,<5.0",
+  "lxml>=6.0,<7.0",
+  "pycryptodome>=3.23,<4.0",
 ]
 
 [project.optional-dependencies]
 ocr = ["ddddocr>=1.5"]
-dev = ["pytest>=8.0", "pytest-qt>=4.4"]
+dev = ["pytest>=8.0", "pyinstaller>=6.22,<7.0"]
 
 [project.scripts]
-luthelper = "luthelper.app:main"
+luthelper-web = "luthelper.web.launcher:main"
 
 [tool.setuptools]
 package-dir = { "" = "src" }
@@ -29,5 +31,4 @@ where = ["src"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-qt_api = "pyside6"
 addopts = "-q"

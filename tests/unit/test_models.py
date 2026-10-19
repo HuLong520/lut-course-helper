@@ -22,3 +22,10 @@ def test_group_state_is_derived_from_tasks() -> None:
 def test_single_class_group_is_supported() -> None:
     state = demo_state()
     assert len(state.groups[2].tasks) == 1
+
+
+def test_webui_index_is_present() -> None:
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parents[2]
+    assert (root / "webui" / "index.html").is_file()
