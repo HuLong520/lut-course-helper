@@ -1,0 +1,16 @@
+PySide6==6.12.0
+PySide6-Fluent-Widgets==1.11.3
+PySideSix-Frameless-Window==0.8.2
+darkdetect==0.8.0
+scipy==1.18.1
+numpy==2.5.4
+pillow==13.0.0
+colorthief==0.2.1
+pywin32==312
+pytest==9.1.1
+pytest-qt==4.5.0
+pluggy==1.7.0
+iniconfig==2.3.1
+packaging==26.3
+pygments==2.21.0
+typing_extensions==4.16.0

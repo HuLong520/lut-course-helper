@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "luthelper"
+version = "0.2.0"
+description = "兰州理工大学抢课助手"
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+license = { text = "GPL-3.0-only" }
+dependencies = [
+  "PySide6==6.12.0",
+  "PySide6-Fluent-Widgets==1.11.3",
+]
+
+[project.optional-dependencies]
+ocr = ["ddddocr>=1.5"]
+dev = ["pytest>=8.0", "pytest-qt>=4.4"]
+
+[project.scripts]
+luthelper = "luthelper.app:main"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+qt_api = "pyside6"
+addopts = "-q"

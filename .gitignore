@@ -12,6 +12,7 @@ release/
 *.spec
 accounts.json
 *.log
+*.lock.tmp
 prototype/screenshots/*
 !prototype/screenshots/README.md
 .DS_Store
