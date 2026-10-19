@@ -9,6 +9,7 @@ htmlcov/
 build/
 dist/
 release/
+archive/
 accounts.json
 *.log
 *.lock.tmp
