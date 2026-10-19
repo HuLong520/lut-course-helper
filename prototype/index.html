@@ -141,13 +141,6 @@
                   </svg>
                   刷新课程
                 </button>
-                <button class="button primary" type="button" data-action="open-schedule">
-                  <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
-                    <circle cx="12" cy="12" r="8.5" />
-                    <path d="M12 7.5V12l3 2" />
-                  </svg>
-                  全局定时
-                </button>
               </div>
             </div>
 
@@ -215,7 +208,7 @@
                   <table class="course-table">
                     <thead>
                       <tr>
-                        <th scope="col" style="width: 30px"><input class="checkbox" type="checkbox" aria-label="选择全部课程" data-select-all /></th>
+                        <th scope="col" style="width: 86px">加入</th>
                         <th scope="col">课程</th>
                         <th scope="col" data-column="capacity">余量</th>
                         <th scope="col" data-column="teacher">教师</th>
@@ -228,16 +221,6 @@
                   </table>
                 </div>
 
-                <div class="table-footer">
-                  <span data-selection-count>未选择课程</span>
-                  <span class="spacer"></span>
-                  <button class="button small primary" type="button" data-action="batch-add" disabled>
-                    <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
-                      <path d="M12 5v14M5 12h14" />
-                    </svg>
-                    加入抢课队列
-                  </button>
-                </div>
               </section>
 
               <aside class="card queue-panel" aria-label="抢课课程组">
@@ -295,27 +278,18 @@
                   <span class="thread-load" data-thread-load>预计 9 线程</span>
                 </div>
 
-                <div class="schedule-box">
-                  <div class="schedule-main">
-                    <span class="schedule-icon">
-                      <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
-                        <circle cx="12" cy="12" r="8.5" />
-                        <path d="M12 7.5V12l3 2" />
-                      </svg>
-                    </span>
-                    <div class="schedule-copy">
-                      <div class="schedule-title">全局定时 <span class="schedule-countdown" data-countdown>未设置</span></div>
-                    </div>
-                    <button class="button small ghost" type="button" data-action="toggle-schedule" aria-expanded="false">
-                      <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
-                        <path d="m6 9 6 6 6-6" />
-                      </svg>
-                    </button>
-                  </div>
-                  <div class="schedule-expand" data-schedule-expand hidden>
-                    <input type="datetime-local" step="1" aria-label="全局定时时间" data-schedule-input />
-                    <button class="button small primary" type="button" data-action="set-schedule">设置</button>
-                  </div>
+                <div class="schedule-strip">
+                  <span class="schedule-strip-label">
+                    <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
+                      <circle cx="12" cy="12" r="8.5" />
+                      <path d="M12 7.5V12l3 2" />
+                    </svg>
+                    定时开抢
+                  </span>
+                  <input class="schedule-date" type="date" aria-label="定时日期" data-schedule-date />
+                  <input class="schedule-time" type="time" step="1" aria-label="定时时间" data-schedule-time />
+                  <span class="schedule-countdown" data-countdown>未启用</span>
+                  <button class="switch" type="button" role="switch" aria-checked="false" aria-label="启用全局定时" data-action="toggle-schedule"></button>
                 </div>
 
                 <div class="group-list" data-group-list></div>
@@ -328,15 +302,10 @@
               <div class="heading-copy">
                 <div class="heading-kicker">FULL CATALOG</div>
                 <h1 class="page-title">全校课程查询</h1>
-                <p class="page-subtitle">手动加载完整列表，再在本地筛选；挑选教学班后批量加入课程组。</p>
+                <p class="page-subtitle">进入页面后自动加载完整列表，再在本地筛选并挑选取课班次。</p>
               </div>
               <div class="page-actions">
-                <button class="button" type="button" data-action="load-all">
-                  <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M12 4v12M7 11l5 5 5-5M5 20h14" />
-                  </svg>
-                  加载全校课程
-                </button>
+                <button class="button" type="button" data-action="load-all">刷新全部课程</button>
               </div>
             </div>
 
@@ -579,7 +548,7 @@
         </button>
       </div>
       <div class="drawer-body" data-detail-body></div>
-      <div class="drawer-footer">
+      <div class="drawer-footer" data-detail-footer>
         <button class="button primary" type="button" data-action="detail-add">
           <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
             <path d="M12 5v14M5 12h14" />

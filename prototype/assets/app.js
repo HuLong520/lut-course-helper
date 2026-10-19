@@ -25,9 +25,9 @@
 
   const state = {
     page: "courses",
-    selectedCourseIds: new Set(),
     basket: [],
     allLoaded: false,
+    allLoading: false,
     filtersOpen: false,
     localFilters: {
       available: false,
@@ -93,11 +93,16 @@
   }
 
   function courseRowMarkup(course) {
-    const selected = state.selectedCourseIds.has(course.id);
+    const added = state.groups.some((group) => group.code === course.code && group.tasks.some((task) => task.classId === course.classId));
     const conflict = course.conflict ? `<span class="conflict-mark">${ICONS.alert}冲突</span>` : "";
     return `
-      <tr data-course-id="${escapeHtml(course.id)}" class="${selected ? "is-selected" : ""}">
-        <td><input class="checkbox" type="checkbox" aria-label="选择${escapeHtml(course.name)} ${escapeHtml(course.classNo)}班" ${selected ? "checked" : ""} data-course-check /></td>
+      <tr data-course-id="${escapeHtml(course.id)}" class="${added ? "is-added" : ""}">
+        <td>
+          <button class="add-course ${added ? "is-added" : ""}" type="button" data-course-add="${escapeHtml(course.id)}" aria-label="${added ? "已加入抢课队列" : "加入抢课队列"}" ${added ? "disabled" : ""}>
+            ${added ? ICONS.check : ICONS.plus}
+            <span>${added ? "已加入" : "加入"}</span>
+          </button>
+        </td>
         <td>
           <div class="course-name"><button class="course-name-button" type="button" data-detail-course="${escapeHtml(course.id)}" title="${escapeHtml(course.name)}">${escapeHtml(course.name)}</button></div>
           <div class="course-code">${escapeHtml(course.code)} · 课序号 ${escapeHtml(course.classNo)}</div>
@@ -115,18 +120,7 @@
     const tbody = $("[data-course-body]");
     if (!tbody) return;
     tbody.innerHTML = mock.courses.map(courseRowMarkup).join("");
-    const count = state.selectedCourseIds.size;
-    $("[data-selection-count]").textContent = count ? `已选择 ${count} 个教学班` : "未选择课程";
-    $('[data-action="batch-add"]').disabled = count === 0;
     $("[data-course-summary]").textContent = `当前轮次 · ${mock.courses.length} 个教学班`;
-    syncSelectAll();
-  }
-
-  function syncSelectAll() {
-    const check = $("[data-select-all]");
-    if (!check) return;
-    check.checked = mock.courses.length > 0 && mock.courses.every((course) => state.selectedCourseIds.has(course.id));
-    check.indeterminate = state.selectedCourseIds.size > 0 && !check.checked;
   }
 
   function renderAllCourses() {
@@ -139,9 +133,8 @@
             <div class="empty-state" style="min-height:360px">
               <div class="empty-inner">
                 <div class="empty-mark">${ICONS.book}</div>
-                <h3 class="empty-title">尚未加载全校课程</h3>
-                <p class="empty-copy">点击“加载全校课程”后，将拉取完整课程列表，再在本地筛选。</p>
-                <button class="button primary" type="button" data-action="load-all">${ICONS.book} 加载全校课程</button>
+                <h3 class="empty-title">正在准备全校课程</h3>
+                <p class="empty-copy">进入页面后会自动加载，加载完成后可在这里本地筛选。</p>
               </div>
             </div>
           </td>
@@ -259,7 +252,7 @@
           <div class="empty-inner">
             <div class="empty-mark">${ICONS.clock}</div>
             <h3 class="empty-title">抢课队列还是空的</h3>
-            <p class="empty-copy">从左侧勾选教学班，加入后会按课程代码自动形成课程组。</p>
+            <p class="empty-copy">从左侧点击教学班的“加入”，会按课程代码自动形成课程组。</p>
             <button class="button primary" type="button" data-action="focus-course-search">选择课程</button>
           </div>
         </div>
@@ -271,17 +264,18 @@
   function groupMarkup(group) {
     const collapsed = group.state === "success" ? "is-collapsed" : "";
     const success = group.state === "success" ? "is-success" : "";
+    const single = group.tasks.length === 1;
     const action = group.state === "running"
       ? `<button class="group-action" type="button" data-group-pause="${group.id}" aria-label="暂停整组">${ICONS.pause}</button>`
       : `<button class="group-action" type="button" data-group-start="${group.id}" aria-label="开始整组">${ICONS.play}</button>`;
     return `
-      <article class="group-card ${collapsed} ${success}" data-group-id="${escapeHtml(group.id)}">
+      <article class="group-card ${single ? "is-single" : ""} ${collapsed} ${success}" data-group-id="${escapeHtml(group.id)}">
         <div class="group-head" data-group-toggle="${escapeHtml(group.id)}">
-          <button class="group-expand" type="button" aria-label="展开或收起课程组">${ICONS.chevron}</button>
+          ${single ? "" : `<button class="group-expand" type="button" aria-label="展开或收起课程组">${ICONS.chevron}</button>`}
           <span class="group-symbol">${escapeHtml(group.code.slice(-2))}</span>
           <div class="group-copy">
-            <div class="group-name">${escapeHtml(group.name)}</div>
-            <div class="group-meta">${groupStateLabel(group)} <span>·</span> <span>${group.tasks.length} 个教学班</span></div>
+            <div class="group-name">${escapeHtml(group.name)} ${single ? `<span class="single-class">${escapeHtml(group.tasks[0].classNo)} 班</span>` : ""}</div>
+            <div class="group-meta">${groupStateLabel(group)} ${single ? `<span>·</span><span>${escapeHtml(group.tasks[0].teacher)} · ${escapeHtml(group.tasks[0].campus)}</span>` : `<span>·</span><span>${group.tasks.length} 个教学班</span>`}</div>
           </div>
           <div class="group-actions">
             ${action}
@@ -289,6 +283,12 @@
             <button class="group-action" type="button" data-group-menu="${group.id}" aria-label="课程组更多操作">${ICONS.more}</button>
           </div>
         </div>
+        ${single ? `
+        <div class="single-task-row">
+          <span class="single-task-time">${escapeHtml(group.tasks[0].time)}</span>
+          <span class="single-task-capacity">${group.tasks[0].selected}/${group.tasks[0].capacity}</span>
+          <span class="single-task-attempts">${group.tasks[0].attempts} 次</span>
+        </div>` : ""}
         <div class="group-body">
           ${
             group.state === "success"
@@ -538,7 +538,10 @@
     const labels = { courses: "课程", "all-courses": "全校课程", selected: "已选课程" };
     $("[data-breadcrumb]").textContent = labels[page];
     if (page === "selected") renderTimetable();
-    if (page === "all-courses") renderAllCourses();
+    if (page === "all-courses") {
+      renderAllCourses();
+      if (!state.allLoaded) loadAllCourses();
+    }
   }
 
   function showInfo(message, title = "操作已完成", duration = 5000) {
@@ -652,6 +655,8 @@
       </div>
     `;
     $("[data-detail-scrim]").hidden = false;
+    $("[data-detail-footer]").hidden = source === "selected";
+    $("[data-detail-footer]").classList.toggle("is-readonly", source === "selected");
     const drawer = $("[data-detail-drawer]");
     drawer.classList.add("is-open");
     drawer.setAttribute("aria-hidden", "false");
@@ -659,60 +664,52 @@
 
   function closeDetail() {
     $("[data-detail-scrim]").hidden = true;
+    const footer = $("[data-detail-footer]");
+    if (footer) {
+      footer.hidden = false;
+      footer.classList.remove("is-readonly");
+    }
     const drawer = $("[data-detail-drawer]");
     drawer.classList.remove("is-open");
     drawer.setAttribute("aria-hidden", "true");
     state.currentDetail = null;
   }
 
-  function addSelectedCoursesToQueue() {
-    if (!state.selectedCourseIds.size) return;
-    const courses = mock.courses.filter((course) => state.selectedCourseIds.has(course.id));
-    let added = 0;
-    const duplicates = [];
-    const groupMap = new Map(state.groups.map((group) => [group.code, group]));
-    courses.forEach((course) => {
-      let group = groupMap.get(course.code);
-      if (!group) {
-        group = {
-          id: `group-${course.code.toLowerCase()}`,
-          code: course.code,
-          name: course.name,
-          state: "waiting",
-          tasks: [],
-        };
-        state.groups.push(group);
-        groupMap.set(course.code, group);
-      }
-      if (!group.tasks.some((task) => task.classId === course.classId)) {
-        group.tasks.push({
-          id: `task-${course.classId}`,
-          classId: course.classId,
-          classNo: course.classNo,
-          teacher: course.teacher,
-          campus: course.campus,
-          time: course.time,
-          state: "standby",
-          attempts: 0,
-          selected: course.selected,
-          capacity: course.capacity,
-        });
-        added += 1;
-      } else {
-        duplicates.push({ course, group });
-      }
+  function addCourseDirectly(course) {
+    let group = state.groups.find((item) => item.code === course.code);
+    if (!group) {
+      group = {
+        id: `group-${course.code.toLowerCase()}`,
+        code: course.code,
+        name: course.name,
+        state: "waiting",
+        tasks: [],
+      };
+      state.groups.push(group);
+    }
+    if (group.tasks.some((task) => task.classId === course.classId)) {
+      openDuplicateModal("course-duplicate", [{ course, group }]);
+      return;
+    }
+    group.tasks.push({
+      id: `task-${course.classId}`,
+      classId: course.classId,
+      classNo: course.classNo,
+      teacher: course.teacher,
+      campus: course.campus,
+      time: course.time,
+      state: "standby",
+      attempts: 0,
+      selected: course.selected,
+      capacity: course.capacity,
     });
-    state.selectedCourseIds.clear();
     renderCourses();
     renderGroups();
-    if (added) {
-      showInfo(`已加入 ${added} 个教学班；未自动开始抢课。`, "已加入抢课队列");
-      pushLog(`[课程页] 批量加入 ${added} 个教学班，课程组保持待开始状态`, "INFO");
-      const newest = $("[data-group-list]").lastElementChild;
-      newest?.classList.add("is-new");
-      newest?.scrollIntoView({ behavior: "smooth", block: "nearest" });
-    }
-    if (duplicates.length) openDuplicateModal("course-duplicate", duplicates);
+    showInfo(`“${course.name}” ${course.classNo} 班已加入抢课队列，未自动开始。`, "已加入");
+    pushLog(`[课程页] 加入 ${course.name} ${course.classNo} 班，课程组待开始`, "INFO");
+    const newest = $("[data-group-list]").lastElementChild;
+    newest?.classList.add("is-new");
+    newest?.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }
 
   function addAllBasket() {
@@ -789,12 +786,13 @@
   }
 
   function setSchedule() {
-    const input = $("[data-schedule-input]");
-    if (!input?.value) {
-      showInfo("请选择定时时间后再设置。", "时间未设置");
+    const dateValue = $("[data-schedule-date]")?.value;
+    const timeValue = $("[data-schedule-time]")?.value;
+    if (!dateValue || !timeValue) {
+      showInfo("请先填写定时日期和时间。", "时间未设置");
       return;
     }
-    const target = new Date(input.value);
+    const target = new Date(`${dateValue}T${timeValue}`);
     if (Number.isNaN(target.getTime())) {
       showInfo("定时时间格式无效。", "无法设置定时");
       return;
@@ -803,7 +801,8 @@
       showInfo("已错过设定时间，将按规则立即启动所有待开始课程组。", "定时已过期");
     }
     state.schedule = target;
-    $("[data-schedule-expand]").hidden = true;
+    const trigger = $('[data-action="toggle-schedule"]');
+    trigger.setAttribute("aria-checked", "true");
     startCountdown();
     pushLog(`[全局定时] 已设置为 ${target.toLocaleString("zh-CN", { hour12: false })}`, "INFO");
   }
@@ -837,6 +836,7 @@
     if (!state.schedule) return;
     clearInterval(state.countdownTimer);
     state.schedule = null;
+    $('[data-action="toggle-schedule"]').setAttribute("aria-checked", "false");
     $("[data-countdown]").textContent = "定时已触发";
     state.groups.forEach((group) => {
       if (group.state === "success") return;
@@ -889,15 +889,21 @@
       openDetail(course);
     });
     $("[data-menu-add]", menu).addEventListener("click", () => {
-      state.selectedCourseIds.add(course.id);
-      renderCourses();
+      addCourseDirectly(course);
       closePopover();
-      showInfo(`“${course.name}” ${course.classNo} 班已选中，可继续选择后批量加入。`, "已选择课程");
     });
     $("[data-menu-remove]", menu).addEventListener("click", () => {
-      state.selectedCourseIds.delete(course.id);
+      const group = state.groups.find((item) => item.code === course.code);
+      if (group) {
+        group.tasks = group.tasks.filter((task) => task.classId !== course.classId);
+        if (!group.tasks.length) {
+          state.groups = state.groups.filter((item) => item.id !== group.id);
+        }
+      }
       renderCourses();
+      renderGroups();
       closePopover();
+      showInfo("已从抢课队列移除。", "已移除");
     });
   }
 
@@ -954,7 +960,7 @@
     });
     $("[data-menu-schedule]", menu).addEventListener("click", () => {
       closePopover();
-      $("[data-schedule-expand]").hidden = false;
+      $("[data-schedule-date]")?.focus();
     });
     $("[data-menu-delete]", menu).addEventListener("click", () => {
       state.groups = state.groups.filter((item) => item.id !== group.id);
@@ -986,10 +992,20 @@
   }
 
   function toggleSchedule(force) {
-    const panel = $("[data-schedule-expand]");
     const trigger = $('[data-action="toggle-schedule"]');
-    panel.hidden = typeof force === "boolean" ? !force : !panel.hidden;
-    trigger.setAttribute("aria-expanded", String(!panel.hidden));
+    const enabled =
+      typeof force === "boolean"
+        ? force
+        : trigger.getAttribute("aria-checked") !== "true";
+    trigger.setAttribute("aria-checked", String(enabled));
+    if (enabled) {
+      setSchedule();
+    } else {
+      state.schedule = null;
+      clearInterval(state.countdownTimer);
+      $("[data-countdown]").textContent = "未启用";
+      showInfo("全局定时已取消。", "定时已关闭");
+    }
   }
 
   function toggleLog(force) {
@@ -1004,17 +1020,13 @@
     $$("[data-page]").forEach((button) => {
       button.addEventListener("click", () => switchPage(button.dataset.page));
     });
-    $("[data-course-body]").addEventListener("change", (event) => {
-      const row = event.target.closest("tr[data-course-id]");
-      if (!row) return;
-      const id = row.dataset.courseId;
-      if (event.target.matches("[data-course-check]")) {
-        if (event.target.checked) state.selectedCourseIds.add(id);
-        else state.selectedCourseIds.delete(id);
-        renderCourses();
-      }
-    });
     $("[data-course-body]").addEventListener("click", (event) => {
+      const addButton = event.target.closest("[data-course-add]");
+      if (addButton) {
+        const course = courseById.get(addButton.dataset.courseAdd);
+        if (course) addCourseDirectly(course);
+        return;
+      }
       const detailButton = event.target.closest("[data-detail-course]");
       if (detailButton) {
         openDetail(courseById.get(detailButton.dataset.detailCourse));
@@ -1025,20 +1037,7 @@
         openCourseMenu(menuButton, courseById.get(menuButton.dataset.courseMenu));
         return;
       }
-      if (event.target.closest(".course-name-button") || event.target.closest("[data-course-check]")) return;
-      const row = event.target.closest("tr[data-course-id]");
-      if (row) {
-        const check = $("[data-course-check]", row);
-        check.checked = !check.checked;
-        if (check.checked) state.selectedCourseIds.add(row.dataset.courseId);
-        else state.selectedCourseIds.delete(row.dataset.courseId);
-        renderCourses();
-      }
-    });
-    $("[data-select-all]").addEventListener("change", (event) => {
-      if (event.target.checked) mock.courses.forEach((course) => state.selectedCourseIds.add(course.id));
-      else state.selectedCourseIds.clear();
-      renderCourses();
+      if (event.target.closest(".course-name-button")) return;
     });
     $("[data-course-search]").addEventListener("input", () => {
       updateSearchClear();
@@ -1094,7 +1093,6 @@
           pushLog("[课程页] 手动刷新课程列表，任务队列保留", "INFO");
         }
         if (action === "column-menu") openColumnMenu(button);
-        if (action === "batch-add") addSelectedCoursesToQueue();
         if (action === "all-batch-add") addAllBasket();
         if (action === "load-all") loadAllCourses();
         if (action === "select-visible") {
@@ -1113,12 +1111,6 @@
           pushLog("[已选课程] 手动刷新课程与课表", "INFO");
         }
         if (action === "toggle-schedule") toggleSchedule();
-        if (action === "set-schedule") setSchedule();
-        if (action === "open-schedule") {
-          switchPage("courses");
-          toggleSchedule(true);
-          $("[data-schedule-input]")?.focus();
-        }
         if (action === "start-all") {
           state.groups.forEach((group) => {
             if (group.state === "success") return;
@@ -1159,11 +1151,9 @@
         if (action === "detail-add") {
           if (state.currentDetail) {
             const course = state.currentDetail.course;
-            state.selectedCourseIds.add(course.id);
+            addCourseDirectly(course);
             closeDetail();
             switchPage("courses");
-            renderCourses();
-            showInfo(`“${course.name}” ${course.classNo} 班已选中。`, "已加入选择");
           }
         }
         if (action === "modal-ignore") {
@@ -1450,11 +1440,14 @@
   }
 
   function loadAllCourses() {
-    if (state.allLoaded) {
-      showInfo("全校课程已在当前会话中加载，可继续本地筛选。", "无需重复加载");
+    if (state.allLoading) return;
+    state.allLoading = true;
+    state.allLoaded = false;
+    const progress = $("[data-all-progress]");
+    if (!progress) {
+      state.allLoading = false;
       return;
     }
-    const progress = $("[data-all-progress]");
     const bar = $(".load-progress-bar span", progress);
     progress.querySelector("span:last-child").textContent = "正在加载 0 / 4455";
     let value = 0;
@@ -1465,6 +1458,7 @@
       if (value >= 100) {
         clearInterval(timer);
         state.allLoaded = true;
+        state.allLoading = false;
         progress.querySelector("span:last-child").textContent = "已加载 4455 条 · 本地筛选";
         renderAllCourses();
         showInfo("全部课程已加载，之后输入关键词只在本地过滤。", "加载完成");
@@ -1525,14 +1519,20 @@
     renderLogs();
     setupEvents();
     populateLogGroupFilter();
+    state.allLoading = false;
     const requestedPage = new URLSearchParams(window.location.search).get("page");
     switchPage(["courses", "all-courses", "selected"].includes(requestedPage) ? requestedPage : "courses");
-    const scheduleInput = $("[data-schedule-input]");
-    if (scheduleInput) {
+    const dateInput = $("[data-schedule-date]");
+    const timeInput = $("[data-schedule-time]");
+    if (dateInput && timeInput) {
       const next = new Date(Date.now() + 10 * 60 * 1000);
       next.setSeconds(0, 0);
-      const local = new Date(next.getTime() - next.getTimezoneOffset() * 60000).toISOString().slice(0, 19);
-      scheduleInput.value = local;
+      const datePart = new Date(next.getTime() - next.getTimezoneOffset() * 60000)
+        .toISOString()
+        .slice(0, 10);
+      const timePart = next.toTimeString().slice(0, 8);
+      dateInput.value = datePart;
+      timeInput.value = timePart;
     }
   }
 

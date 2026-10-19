@@ -12,5 +12,7 @@ release/
 *.spec
 accounts.json
 *.log
+prototype/screenshots/*
+!prototype/screenshots/README.md
 .DS_Store
 Thumbs.db
