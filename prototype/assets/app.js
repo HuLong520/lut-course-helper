@@ -262,16 +262,15 @@
   }
 
   function groupMarkup(group) {
-    const collapsed = group.state === "success" || group.collapsed ? "is-collapsed" : "";
     const success = group.state === "success" ? "is-success" : "";
     const single = group.tasks.length === 1;
     const action = group.state === "running"
       ? `<button class="group-action" type="button" data-group-pause="${group.id}" aria-label="暂停整组">${ICONS.pause}</button>`
       : `<button class="group-action" type="button" data-group-start="${group.id}" aria-label="开始整组">${ICONS.play}</button>`;
     return `
-      <article class="group-card ${single ? "is-single" : ""} ${collapsed} ${success}" data-group-id="${escapeHtml(group.id)}">
-        <div class="group-head" data-group-toggle="${escapeHtml(group.id)}" ${single ? "" : 'role="button" tabindex="0" aria-label="展开或收起课程组"'}>
-          ${single ? "" : `<button class="group-expand" type="button" aria-label="展开或收起课程组">${ICONS.chevron}</button>`}
+      <article class="group-card is-collapsed ${single ? "is-single" : ""} ${success}" data-group-id="${escapeHtml(group.id)}">
+        <div class="group-head">
+          <button class="group-expand" type="button" data-group-menu="${group.id}" aria-label="课程组操作" title="课程组操作">${ICONS.chevron}</button>
           <span class="group-symbol">${escapeHtml(group.code.slice(-2))}</span>
           <div class="group-copy">
             <div class="group-name">${escapeHtml(group.name)} ${single ? `<span class="single-class">${escapeHtml(group.tasks[0].classNo)} 班</span>` : ""}</div>
@@ -687,7 +686,6 @@
       };
       state.groups.push(group);
     }
-      group.collapsed = false;
     if (group.tasks.some((task) => task.classId === course.classId)) {
       openDuplicateModal("course-duplicate", [{ course, group }]);
       return;
@@ -745,7 +743,6 @@
         state.groups.push(group);
         groupMap.set(course.code, group);
       }
-      group.collapsed = false;
       if (!group.tasks.some((task) => task.classId === course.classId)) {
         group.tasks.push({
           id: `task-${course.classId}`,
@@ -950,12 +947,29 @@
     const menu = document.createElement("div");
     menu.className = "menu-popover";
     menu.innerHTML = `
+      <button class="menu-item" type="button" data-menu-start>${ICONS.play} 开始课程组</button>
+      <button class="menu-item" type="button" data-menu-stop>${ICONS.pause} 暂停课程组</button>
       <button class="menu-item" type="button" data-menu-reset>${ICONS.clock} 重置为待开始</button>
-      <button class="menu-item" type="button" data-menu-schedule>${ICONS.play} 设置全局定时</button>
       <div class="menu-separator"></div>
-      <button class="menu-item danger" type="button" data-menu-delete>${ICONS.x} 移除课程组</button>
+      <button class="menu-item danger" type="button" data-menu-delete>${ICONS.x} 删除课程组</button>
     `;
     positionMenu(menu, anchor);
+    $("[data-menu-start]", menu).addEventListener("click", () => {
+      group.state = "running";
+      group.tasks.forEach((task, index) => {
+        task.state = index === 0 ? "active" : "standby";
+      });
+      renderGroups();
+      closePopover();
+    });
+    $("[data-menu-stop]", menu).addEventListener("click", () => {
+      group.state = "paused";
+      group.tasks.forEach((task) => {
+        task.state = "paused";
+      });
+      renderGroups();
+      closePopover();
+    });
     $("[data-menu-reset]", menu).addEventListener("click", () => {
       group.state = "waiting";
       group.tasks.forEach((task) => {
@@ -964,14 +978,12 @@
       renderGroups();
       closePopover();
     });
-    $("[data-menu-schedule]", menu).addEventListener("click", () => {
-      closePopover();
-      $("[data-schedule-date]")?.focus();
-    });
     $("[data-menu-delete]", menu).addEventListener("click", () => {
       state.groups = state.groups.filter((item) => item.id !== group.id);
-      renderGroups();
       closePopover();
+      renderCourses();
+      renderGroups();
+      showInfo("课程组已删除。", "已删除");
     });
   }
 
@@ -1132,18 +1144,6 @@
           showInfo("所有未成功课程组已从首选开始。", "已开始");
           pushLog("[课程组] 全部开始", "INFO");
         }
-        if (action === "stop-all") {
-          state.groups.forEach((group) => {
-            if (group.state === "success") return;
-            group.state = "paused";
-            group.tasks.forEach((task) => {
-              task.state = "paused";
-            });
-          });
-          renderGroups();
-          showInfo("所有运行中课程组已暂停。", "已停止");
-          pushLog("[课程组] 全部停止", "INFO");
-        }
         if (action === "mute") {
           state.muted = !state.muted;
           button.classList.toggle("is-muted", state.muted);
@@ -1224,15 +1224,6 @@
     });
     $$("[data-group-list]").forEach((list) => {
       list.addEventListener("click", (event) => {
-        const groupToggle = event.target.closest("[data-group-toggle]");
-        if (groupToggle) {
-          const group = state.groups.find((item) => item.id === groupToggle.dataset.groupToggle);
-          if (group && group.tasks.length > 1 && group.state !== "running" && group.state !== "success") {
-            group.collapsed = !group.collapsed;
-            renderGroups();
-          }
-          return;
-        }
         const start = event.target.closest("[data-group-start]");
         if (start) {
           const group = state.groups.find((item) => item.id === start.dataset.groupStart);
@@ -1280,13 +1271,6 @@
           if (group) openGroupMenu(groupMenu, group);
         }
       });
-    });
-    $("[data-group-list]").addEventListener("keydown", (event) => {
-      if (event.key !== "Enter" && event.key !== " ") return;
-      const groupToggle = event.target.closest("[data-group-toggle]");
-      if (!groupToggle) return;
-      event.preventDefault();
-      groupToggle.click();
     });
     $$("[data-all-body]").forEach((body) => {
       body.addEventListener("change", (event) => {
