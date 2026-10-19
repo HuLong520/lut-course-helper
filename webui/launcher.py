@@ -39,7 +39,7 @@ def main() -> None:
         threading.Thread(target=server.serve_forever, daemon=True).start()
 
         print("=" * 68)
-        print("  抢课助手 WebUI")
+        print("  兰理工选课助手 WebUI")
         print(f"  本地地址：{url}")
         print("  关闭此终端或按 Ctrl+C 即可退出程序")
         print("=" * 68)

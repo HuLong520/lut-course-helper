@@ -4,7 +4,7 @@
 
 LUTHelper 是一个 Windows x64 单文件绿色应用：
 
-- 用户双击 `抢课助手.exe`。
+- 用户双击 `LUT-Course-Helper.exe`（显示名“兰理工选课助手”）。
 - 显示终端窗口并启动本地 Web 服务。
 - 自动使用系统默认浏览器打开界面。
 - 关闭终端或按 `Ctrl+C` 退出，网页随之失效。
@@ -23,7 +23,7 @@ LUTHelper 是一个 Windows x64 单文件绿色应用：
 ### 2.1 最终形态
 
 ```text
-抢课助手.exe
+LUT-Course-Helper.exe
 ├─ Python 启动器
 ├─ 内嵌 index.html（单 HTML，CSS/JS/图标全部内联）
 └─ 本地 HTTP 服务 127.0.0.1:<随机端口>
@@ -219,14 +219,14 @@ Qt 的 `presentation/` 不再迁移到正式入口，只保留历史代码。
 - 使用 PyInstaller console 模式，确保终端可见。
 - 使用 `--onefile`。
 - 将 `webui/index.html` 作为 datas 嵌入。
-- 正式 exe 名称：`抢课助手.exe`。
+- 正式 exe 文件名：`LUT-Course-Helper.exe`，中文显示名“兰理工选课助手”。
 - 开发 exe 名称：`LUTHelper-dev.exe`。
 - 不使用 UPX。
 - 正式构建不包含 OCR 依赖。
 
 当前演示构建：
 
-- `dist/LUTHelper-demo.exe`
+- `dist/LUT-Course-Helper.exe`
 - 约 8.4 MB
 - console 版
 - 内嵌 `index.html`
@@ -263,7 +263,7 @@ Qt 的 `presentation/` 不再迁移到正式入口，只保留历史代码。
 
 ### 阶段 D：打包与清理
 
-- 正式构建 `抢课助手.exe`。
+- 正式构建 `LUT-Course-Helper.exe`。
 - 开发构建 `LUTHelper-dev.exe`。
 - 验证单文件启动、端口、浏览器打开和退出。
 - 旧 Qt 产物归档，不删除历史提交。
@@ -281,6 +281,6 @@ Qt 的 `presentation/` 不再迁移到正式入口，只保留历史代码。
 - HTML 原型和全部视觉评审修改完成。
 - 单文件 `prototype/standalone.html` 已完成。
 - `webui/index.html` 和 console 启动器已完成。
-- `dist/LUTHelper-demo.exe` 已生成，当前约 8.4 MB。
+- `dist/LUT-Course-Helper.exe` 由当前启动器构建。
 - PySide6 / Fluent Widgets 路线已停止；相关提交保留为历史参考。
 - 下一阶段开始接入 Python API 和真实登录数据。

@@ -1,4 +1,4 @@
-# LUTHelper
+# 兰理工选课助手
 
 兰州理工大学选课系统 WebUI 助手。
 
@@ -15,13 +15,13 @@
 ## 运行演示 exe
 
 ```text
-dist\LUTHelper-demo.exe
+dist\LUT-Course-Helper.exe
 ```
 
 启动后终端会显示：
 
 ```text
-抢课助手 WebUI
+兰理工选课助手 WebUI
 本地地址：http://127.0.0.1:<端口>/index.html
 ```
 
@@ -38,13 +38,13 @@ python -m venv .venv
 ## 构建
 
 ```powershell
-.\.venv\Scripts\python.exe -m PyInstaller --noconfirm --clean LUTHelper.spec
+.\.venv\Scripts\python.exe -m PyInstaller --noconfirm --clean LUT-Course-Helper.spec
 ```
 
 输出：
 
 ```text
-dist\LUTHelper-demo.exe
+dist\LUT-Course-Helper.exe
 ```
 
 ## 目录
