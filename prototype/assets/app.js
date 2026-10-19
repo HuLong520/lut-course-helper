@@ -1146,6 +1146,11 @@
         }
         if (action === "toggle-schedule") toggleSchedule();
         if (action === "toggle-all") {
+          if (!state.groups.length) {
+            showInfo("请先从左侧选择课程并加入抢课队列。", "请先选择课程");
+            pushLog("[课程组] 开始全部被阻止：抢课队列为空", "WARN");
+            return;
+          }
           const hasRunning = state.groups.some((group) => group.state === "running");
           state.groups.forEach((group) => {
             if (group.state === "success") return;
