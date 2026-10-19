@@ -14,6 +14,8 @@ from PySide6.QtWidgets import (
     QTableWidgetItem,
     QVBoxLayout,
     QWidget,
+    QScrollArea,
+    QSizePolicy,
 )
 from qfluentwidgets import InfoBar, InfoBarPosition
 
@@ -47,8 +49,8 @@ class CoursesPage(QWidget):
 
     def _build_ui(self) -> None:
         root = QVBoxLayout(self)
-        root.setContentsMargins(24, 18, 24, 18)
-        root.setSpacing(14)
+        root.setContentsMargins(26, 22, 26, 14)
+        root.setSpacing(16)
 
         header = QHBoxLayout()
         header.addWidget(
@@ -66,9 +68,13 @@ class CoursesPage(QWidget):
         splitter.setChildrenCollapsible(False)
         splitter.addWidget(self._build_course_browser())
         splitter.addWidget(self._build_queue_panel())
-        splitter.setSizes([720, 440])
+        splitter.setStretchFactor(0, 62)
+        splitter.setStretchFactor(1, 38)
+        splitter.setSizes([820, 500])
         root.addWidget(splitter, 1)
-        root.addWidget(BottomLogDock())
+        log = BottomLogDock()
+        log.setFixedHeight(116)
+        root.addWidget(log)
 
     def _build_course_browser(self) -> Card:
         card = Card()
@@ -76,7 +82,8 @@ class CoursesPage(QWidget):
 
         top = QHBoxLayout()
         top.addWidget(label("课程检索", role="section"))
-        top.addWidget(label("当前轮次 · 7 个教学班", role="muted"))
+        self.course_summary = label("当前轮次 · 7 个教学班", role="muted")
+        top.addWidget(self.course_summary)
         top.addStretch(1)
         top.addWidget(RoundIconButton("▦"))
         top.addWidget(RoundIconButton("≡"))
@@ -93,6 +100,7 @@ class CoursesPage(QWidget):
         filters.addWidget(type_combo)
         filters.addWidget(campus_combo)
         filters.addWidget(search, 1)
+        filters.setSpacing(7)
         body.addLayout(filters)
 
         self.table = QTableWidget(0, 6)
@@ -102,9 +110,9 @@ class CoursesPage(QWidget):
         self.table.setAlternatingRowColors(True)
         self.table.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
         self.table.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
-        self.table.verticalHeader().setDefaultSectionSize(52)
+        self.table.verticalHeader().setDefaultSectionSize(58)
         self.table.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeMode.Fixed)
-        self.table.setColumnWidth(0, 56)
+        self.table.setColumnWidth(0, 58)
         self.table.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeMode.Stretch)
         self.table.horizontalHeader().setSectionResizeMode(2, QHeaderView.ResizeMode.ResizeToContents)
         self.table.horizontalHeader().setSectionResizeMode(3, QHeaderView.ResizeMode.ResizeToContents)
@@ -118,17 +126,20 @@ class CoursesPage(QWidget):
         body = card.body()
 
         top = QHBoxLayout()
-        top.addWidget(label("抢课队列", role="section"))
+        queue_head = label("抢课队列", role="section")
+        queue_head.setStyleSheet(f"color:{tokens.INK};font-size:13px;font-weight:800;")
+        top.addWidget(queue_head)
         self.group_count = Pill("0 组", "live")
         top.addWidget(self.group_count)
         top.addStretch(1)
         self.start_all_button = PrimaryButton("开始全部")
-        self.start_all_button.setMinimumWidth(108)
+        self.start_all_button.setMinimumSize(108, 36)
         self.start_all_button.clicked.connect(self._toggle_all)
         top.addWidget(self.start_all_button)
         body.addLayout(top)
 
         params = QHBoxLayout()
+        params.setSpacing(7)
         params.addWidget(label("间隔", role="muted"))
         self.interval_combo = QComboBox()
         self.interval_combo.addItems(["50 ms", "100 ms", "200 ms", "500 ms"])
@@ -140,12 +151,14 @@ class CoursesPage(QWidget):
         self.thread_spin.setValue(3)
         self.thread_spin.valueChanged.connect(self._refresh_thread_hint)
         self.thread_hint = label("预计 9 线程", role="muted")
+        self.thread_hint.setStyleSheet(f"color:{tokens.TEAL};font-size:9px;font-weight:700;")
         params.addWidget(self.thread_spin)
         params.addWidget(self.thread_hint)
         params.addStretch(1)
         body.addLayout(params)
 
         schedule = QHBoxLayout()
+        schedule.setSpacing(6)
         schedule.addWidget(label("定时开抢", role="muted"))
         schedule_date = QLineEdit("2026/10/19")
         schedule_date.setFixedWidth(104)
@@ -154,13 +167,15 @@ class CoursesPage(QWidget):
         schedule.addWidget(schedule_date)
         schedule.addWidget(schedule_time)
         schedule.addStretch(1)
-        schedule.addWidget(label("未启用", role="muted"))
+        schedule_status = label("未启用", role="muted")
+        schedule_status.setStyleSheet(f"color:{tokens.FAINT};font-size:9px;")
+        schedule.addWidget(schedule_status)
         body.addLayout(schedule)
 
         self.queue_container = QWidget()
         self.queue_layout = QVBoxLayout(self.queue_container)
         self.queue_layout.setContentsMargins(0, 0, 0, 0)
-        self.queue_layout.setSpacing(8)
+        self.queue_layout.setSpacing(10)
         body.addWidget(self.queue_container, 1)
         return card
 
@@ -289,17 +304,30 @@ class CoursesPage(QWidget):
             QFrame {{
                 background: {tokens.SURFACE};
                 border: 1px solid {tokens.LINE};
-                border-radius: 11px;
+                border-radius: 12px;
+            }}
+            QFrame:hover {{
+                border-color: {tokens.LINE_STRONG};
+                background: #fffefb;
             }}
             """
         )
         layout = QVBoxLayout(card)
-        layout.setContentsMargins(10, 9, 10, 9)
-        layout.setSpacing(6)
+        layout.setContentsMargins(12, 10, 12, 10)
+        layout.setSpacing(8)
 
         head = QHBoxLayout()
-        head.addWidget(label(group.course_code[-2:], role="muted"))
-        head.addWidget(label(group.name, role="section"))
+        symbol = label(group.course_code[-2:], role="muted")
+        symbol.setFixedSize(30, 30)
+        symbol.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        symbol.setStyleSheet(
+            f"color:{tokens.TEAL_STRONG};background:{tokens.TEAL_PALE};"
+            "border:1px solid #d3e9df;border-radius:8px;font-size:10px;font-weight:800;"
+        )
+        head.addWidget(symbol)
+        name = label(group.name, role="section")
+        name.setStyleSheet(f"color:{tokens.INK};font-size:11px;font-weight:800;")
+        head.addWidget(name)
         state_text = {
             GroupState.RUNNING: "运行中",
             GroupState.PAUSED: "已暂停",
@@ -315,12 +343,37 @@ class CoursesPage(QWidget):
         layout.addLayout(head)
 
         for index, task in enumerate(group.tasks):
-            row = QHBoxLayout()
+            task_row = QFrame()
+            task_row.setFixedHeight(48)
+            task_row.setStyleSheet(
+                f"QFrame {{ background:{tokens.SURFACE_SOFT};border:1px solid #e9e5dc;"
+                "border-radius:9px; }"
+            )
+            row = QHBoxLayout(task_row)
+            row.setContentsMargins(8, 5, 8, 5)
+            row.setSpacing(7)
             role = "首选" if index == 0 else f"备选 {index}"
-            row.addWidget(label(f"{task.course.class_no} 班 · {task.course.teacher} · {role}", role="body"))
-            row.addStretch(1)
+            role_label = label(f"{'▶' if task.state is TaskState.ACTIVE else '○'}")
+            role_label.setStyleSheet(
+                f"color:{tokens.TEAL if task.state is TaskState.ACTIVE else tokens.MUTED};"
+                "font-size:11px;"
+            )
+            row.addWidget(role_label)
+            copy = QVBoxLayout()
+            copy.setSpacing(1)
+            main = label(f"{task.course.class_no} 班 · {task.course.teacher}")
+            main.setStyleSheet(f"color:{tokens.INK_SOFT};font-size:10px;font-weight:700;")
+            main.setFixedHeight(15)
+            meta = label(f"{task.course.campus} · {task.course.time_text}")
+            meta.setStyleSheet(f"color:{tokens.FAINT};font-size:8px;")
+            meta.setFixedHeight(13)
+            copy.addWidget(main)
+            copy.addWidget(meta)
+            row.addLayout(copy, 1)
+            role_badge = Pill(role, "live" if index == 0 else "neutral")
+            row.addWidget(role_badge)
             row.addWidget(label(f"{task.course.selected}/{task.course.capacity}", role="muted"))
-            layout.addLayout(row)
+            layout.addWidget(task_row)
         return card
 
     def _request_group_remove(self, group: CourseGroup) -> None:

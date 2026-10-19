@@ -12,9 +12,11 @@ from PySide6.QtWidgets import (
     QTableWidgetItem,
     QVBoxLayout,
     QWidget,
+    QFrame,
 )
 
 from luthelper.domain.models import AppState
+from luthelper.presentation.theme import tokens
 from luthelper.presentation.widgets.ui_kit import GhostButton, Pill, SectionHeading, label
 
 
@@ -26,8 +28,8 @@ class AllCoursesPage(QWidget):
 
     def _build_ui(self) -> None:
         root = QVBoxLayout(self)
-        root.setContentsMargins(24, 18, 24, 18)
-        root.setSpacing(14)
+        root.setContentsMargins(26, 22, 26, 18)
+        root.setSpacing(16)
 
         header = QHBoxLayout()
         header.addWidget(
@@ -38,10 +40,23 @@ class AllCoursesPage(QWidget):
             )
         )
         header.addStretch(1)
-        header.addWidget(GhostButton("刷新全部课程"))
+        refresh = GhostButton("刷新全部课程")
+        header.addWidget(refresh)
         root.addLayout(header)
 
+        content = QHBoxLayout()
+        content.setSpacing(14)
+
+        left = QFrame()
+        left.setStyleSheet(
+            f"QFrame {{ background:{tokens.SURFACE};border:1px solid {tokens.LINE};border-radius:16px; }}"
+        )
+        left_layout = QVBoxLayout(left)
+        left_layout.setContentsMargins(15, 12, 15, 12)
+        left_layout.setSpacing(10)
+
         toolbar = QHBoxLayout()
+        toolbar.setSpacing(7)
         self.search = QLineEdit()
         self.search.setPlaceholderText("关键词 / 教师")
         self.search.setClearButtonEnabled(True)
@@ -50,7 +65,7 @@ class AllCoursesPage(QWidget):
         toolbar.addWidget(self.search, 1)
         toolbar.addWidget(self.campus)
         toolbar.addWidget(Pill("已加载 · 本地筛选", "live"))
-        root.addLayout(toolbar)
+        left_layout.addLayout(toolbar)
 
         self.table = QTableWidget(0, 6)
         self.table.setHorizontalHeaderLabels(["加入", "课程", "余量", "教师", "时间地点", "状态"])
@@ -64,13 +79,40 @@ class AllCoursesPage(QWidget):
         self.table.horizontalHeader().setSectionResizeMode(3, QHeaderView.ResizeMode.ResizeToContents)
         self.table.horizontalHeader().setSectionResizeMode(4, QHeaderView.ResizeMode.Stretch)
         self.table.horizontalHeader().setSectionResizeMode(5, QHeaderView.ResizeMode.ResizeToContents)
-        root.addWidget(self.table, 1)
+        left_layout.addWidget(self.table, 1)
 
         footer = QHBoxLayout()
         footer.addWidget(label("全部课程不会带校区参数；关键词只在本地过滤。", role="muted"))
         footer.addStretch(1)
         footer.addWidget(Pill("0 个待加入教学班", "neutral"))
-        root.addLayout(footer)
+        left_layout.addLayout(footer)
+        content.addWidget(left, 76)
+
+        basket = QFrame()
+        basket.setStyleSheet(
+            f"QFrame {{ background:{tokens.SURFACE};border:1px solid {tokens.LINE};border-radius:16px; }}"
+        )
+        basket.setMinimumWidth(280)
+        basket_layout = QVBoxLayout(basket)
+        basket_layout.setContentsMargins(15, 14, 15, 15)
+        basket_layout.setSpacing(10)
+        basket_head = QHBoxLayout()
+        basket_head.addWidget(label("待加入教学班", role="section"))
+        basket_head.addStretch(1)
+        basket_head.addWidget(Pill("0", "neutral"))
+        basket_layout.addLayout(basket_head)
+        basket_layout.addWidget(label("按表格顺序形成首选与备选", role="muted"))
+        basket_layout.addStretch(1)
+        add_all = QPushButton("加入抢课队列")
+        add_all.setMinimumHeight(36)
+        add_all.setStyleSheet(
+            f"QPushButton {{ color:#fff;background:{tokens.TEAL};border-radius:8px;"
+            "font-size:11px;font-weight:700;padding:7px 12px; }} "
+            f"QPushButton:hover {{ background:{tokens.TEAL_STRONG}; }}"
+        )
+        basket_layout.addWidget(add_all)
+        content.addWidget(basket, 24)
+        root.addLayout(content, 1)
         self._fill_demo()
 
     def _fill_demo(self) -> None:

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from PySide6.QtCore import Qt
+from PySide6.QtGui import QColor, QBrush
 from PySide6.QtWidgets import (
     QAbstractItemView,
     QComboBox,
@@ -11,8 +12,10 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
     QWidget,
 )
+from PySide6.QtWidgets import QLabel
 
 from luthelper.domain.models import AppState
+from luthelper.presentation.theme import tokens
 from luthelper.presentation.widgets.ui_kit import Card, GhostButton, Pill, SectionHeading, label
 
 
@@ -24,8 +27,8 @@ class SelectedPage(QWidget):
 
     def _build_ui(self) -> None:
         root = QVBoxLayout(self)
-        root.setContentsMargins(24, 18, 24, 18)
-        root.setSpacing(14)
+        root.setContentsMargins(26, 22, 26, 18)
+        root.setSpacing(16)
 
         header = QHBoxLayout()
         header.addWidget(
@@ -89,8 +92,17 @@ class SelectedPage(QWidget):
         grid.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
         grid.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
         grid.setShowGrid(True)
+        block_colors = [
+            ("#e7f2ed", "#c8ded5"),
+            ("#fbf1df", "#eeddbb"),
+            ("#eaf2f8", "#cedfe9"),
+            ("#f9eae7", "#ecd4cf"),
+            ("#f1edf6", "#ddd5e8"),
+            ("#edf0ef", "#d9dfdc"),
+            ("#e7f2ed", "#c8ded5"),
+        ]
 
-        for course in self.state.selected_courses:
+        for index, course in enumerate(self.state.selected_courses):
             slot = course.slots[0]
             if not slot.weekday or not slot.start_section:
                 continue
@@ -100,8 +112,14 @@ class SelectedPage(QWidget):
             if row + span > 12:
                 span = 12 - row
             grid.setSpan(row, col, span, 1)
-            item = QTableWidgetItem(f"{course.name}\n{course.teacher} · {slot.place}")
-            item.setBackground(Qt.GlobalColor.transparent)
-            grid.setItem(row, col, item)
+            bg, border = block_colors[index % len(block_colors)]
+            block = QLabel(f"{course.name}\n{course.teacher} · {slot.place}")
+            block.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
+            block.setContentsMargins(6, 4, 6, 4)
+            block.setStyleSheet(
+                f"QLabel {{ color:{tokens.INK};background:{bg};border:1px solid {border};"
+                "border-left:3px solid #438b76;border-radius:6px;padding:4px 6px;font-size:9px; }}"
+            )
+            grid.setCellWidget(row, col, block)
         body.addWidget(grid, 1)
         return card

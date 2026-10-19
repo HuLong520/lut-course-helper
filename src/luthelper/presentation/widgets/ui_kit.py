@@ -49,6 +49,8 @@ class Pill(QLabel):
     def __init__(self, text: str, tone: str = "neutral", parent: QWidget | None = None) -> None:
         super().__init__(text, parent)
         self.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.setSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Fixed)
+        self.setMaximumHeight(24)
         self.set_tone(tone)
 
     def set_tone(self, tone: str) -> None:

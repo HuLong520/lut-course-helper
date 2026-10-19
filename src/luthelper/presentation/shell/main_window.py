@@ -1,48 +1,24 @@
 from __future__ import annotations
 
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QHBoxLayout, QWidget
-from qfluentwidgets import (
-    FluentIcon,
-    FluentWindow,
-    InfoBar,
-    InfoBarPosition,
-    PushButton,
-    setTheme,
-    setThemeColor,
-    Theme,
-)
+from qfluentwidgets import InfoBar, InfoBarPosition, setTheme, setThemeColor, Theme
 
 from luthelper.application.demo_data import demo_state
 from luthelper.domain.models import AppState, Course, CourseGroup
 from luthelper.presentation.pages.all_courses_page import AllCoursesPage
 from luthelper.presentation.pages.courses_page import CoursesPage
 from luthelper.presentation.pages.selected_page import SelectedPage
+from luthelper.presentation.shell.app_shell import AppShell
 from luthelper.presentation.theme import tokens
 
 
-class MainWindow(FluentWindow):
+class MainWindow(AppShell):
     def __init__(self) -> None:
-        super().__init__()
-        self.state = demo_state()
-        self.setWindowTitle("抢课助手")
-        self.resize(1440, 900)
-        self.setMinimumSize(1080, 680)
-
-        self.courses_page = CoursesPage(self.state)
+        super().__init__(demo_state())
         self.courses_page.setObjectName("coursesPage")
-        self.all_courses_page = AllCoursesPage(self.state)
         self.all_courses_page.setObjectName("allCoursesPage")
-        self.selected_page = SelectedPage(self.state)
         self.selected_page.setObjectName("selectedPage")
-
-        self.addSubInterface(self.courses_page, FluentIcon.BOOK_SHELF, "课程")
-        self.addSubInterface(self.all_courses_page, FluentIcon.SEARCH, "全校课程")
-        self.addSubInterface(self.selected_page, FluentIcon.CALENDAR, "已选课程")
         self._wire()
-        self.navigationInterface.setExpandWidth(210)
-        self.navigationInterface.setCollapsible(True)
-        self.switchTo(self.courses_page)
 
     def _wire(self) -> None:
         self.courses_page.courseAdded.connect(self._add_course)
